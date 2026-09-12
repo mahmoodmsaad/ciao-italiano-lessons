@@ -3,6 +3,7 @@ import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
 import { errorMessage } from '../api/client.js';
 import { Alert, Spinner } from '../components/ui.jsx';
+import DemoBanner from '../components/DemoBanner.jsx';
 
 export default function Login() {
   const { login, user, loading } = useAuth();
@@ -90,17 +91,21 @@ export default function Login() {
 /** Login aur Register dono ka common layout. */
 export function AuthShell({ title, subtitle, children }) {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-brand-50 via-slate-100 to-slate-200 px-4 py-10">
-      <div className="w-full max-w-md">
-        <div className="mb-6 text-center">
-          <span className="text-5xl">📚</span>
-          <h1 className="mt-3 text-2xl font-bold text-slate-900">University E-Library</h1>
-          <p className="mt-1 text-sm text-slate-600">{subtitle}</p>
-        </div>
+    <div className="flex min-h-screen flex-col bg-gradient-to-br from-brand-50 via-slate-100 to-slate-200">
+      <DemoBanner />
 
-        <div className="card p-6 sm:p-8">
-          <h2 className="mb-6 text-lg font-semibold text-slate-900">{title}</h2>
-          {children}
+      <div className="flex flex-1 items-center justify-center px-4 py-10">
+        <div className="w-full max-w-md">
+          <div className="mb-6 text-center">
+            <span className="text-5xl">📚</span>
+            <h1 className="mt-3 text-2xl font-bold text-slate-900">University E-Library</h1>
+            <p className="mt-1 text-sm text-slate-600">{subtitle}</p>
+          </div>
+
+          <div className="card p-6 sm:p-8">
+            <h2 className="mb-6 text-lg font-semibold text-slate-900">{title}</h2>
+            {children}
+          </div>
         </div>
       </div>
     </div>

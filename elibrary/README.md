@@ -91,6 +91,36 @@ Browser mein **http://localhost:5173** kholein.
 
 ---
 
+## Live demo build (bina server ke)
+
+App ko aise bhi build kiya ja sakta hai ke wo **poori browser ke andar** chale —
+na Node server chahiye, na MongoDB. Ye presentation, viva ya link share karne ke
+liye kaam aata hai.
+
+```bash
+cd elibrary/frontend
+VITE_DEMO=true npm run build
+```
+
+`dist/` folder ban jayega — usay kisi bhi static host par daal dein
+(GitHub Pages, Netlify, Vercel) ya seedha `dist/index.html` browser mein kholein.
+
+Kaise kaam karta hai:
+
+- `src/api/demoBackend.js` axios ka ek adapter hai jo asli API ke **wohi endpoints,
+  wohi rules aur wohi error messages** browser ke andar chalata hai.
+- Data browser ki `localStorage` mein rehta hai — page band karke wapas aayen to
+  bhi mehfooz rehta hai. Upar wali patti par "Reset karein" se sab shuru wali
+  haalat par aa jata hai.
+- Demo build hash routing (`#/login`) use karti hai taake kisi bhi folder par chale.
+- **Normal build par iska koi asar nahi** — `npm run build` mein demo ka saara code
+  bundle se nikal jata hai (verify: bundle size aur `grep elibrary_demo_db dist/`).
+
+> Demo mode asli backend ka mutabadil nahi hai — ye sirf frontend dikhane ke liye
+> hai. Project ka asli backend `backend/` folder mein hai.
+
+---
+
 ## Project structure
 
 ```

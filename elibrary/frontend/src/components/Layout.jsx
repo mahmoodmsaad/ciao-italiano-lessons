@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
+import DemoBanner from './DemoBanner.jsx';
 
 const studentLinks = [
   { to: '/', label: 'Catalog', end: true },
@@ -36,6 +37,7 @@ export default function Layout() {
 
   return (
     <div className="min-h-screen">
+      <DemoBanner />
       <header className="sticky top-0 z-40 border-b border-slate-200 bg-white/95 backdrop-blur">
         <div className="mx-auto flex max-w-7xl items-center gap-4 px-4 py-3">
           <Link to={isAdmin ? '/admin' : '/'} className="flex items-center gap-2">

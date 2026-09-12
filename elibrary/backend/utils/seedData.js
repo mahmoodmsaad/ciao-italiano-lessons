@@ -26,7 +26,7 @@ export async function seedDatabase({ log = () => {} } = {}) {
   // Demo issue records - ek normal, ek overdue, ek returned.
   const plans = [
     { student: students[0], book: books[0], issuedDaysAgo: 3, returned: false },
-    { student: students[0], book: books[2], issuedDaysAgo: 25, returned: false }, // overdue
+    { student: students[1], book: books[2], issuedDaysAgo: 25, returned: false }, // overdue
     { student: students[1], book: books[4], issuedDaysAgo: 6, returned: false },
     { student: students[2], book: books[1], issuedDaysAgo: 40, returnedDaysAgo: 30 },
   ];

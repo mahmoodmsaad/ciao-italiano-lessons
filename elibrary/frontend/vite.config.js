@@ -2,7 +2,11 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
 
+// Demo build (VITE_DEMO=true) kahin bhi host ho sakti hai, is liye relative paths.
+const isDemo = process.env.VITE_DEMO === 'true';
+
 export default defineConfig({
+  base: isDemo ? './' : '/',
   plugins: [react(), tailwindcss()],
   server: {
     port: 5173,

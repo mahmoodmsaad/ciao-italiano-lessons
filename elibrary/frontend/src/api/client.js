@@ -1,10 +1,21 @@
 import axios from 'axios';
+import { demoAdapter } from './demoBackend.js';
+
+/**
+ * Demo mode: app browser ke andar hi chalti hai, koi backend server nahi chahiye.
+ * Ye sirf `VITE_DEMO=true npm run build` par on hota hai - normal build mein
+ * demo backend ka code bundle se nikal jata hai.
+ */
+export const DEMO = import.meta.env.VITE_DEMO === 'true';
 
 const baseURL = import.meta.env.VITE_API_URL
   ? `${import.meta.env.VITE_API_URL}/api`
   : '/api'; // Vite proxy backend tak pohanchata hai
 
-const api = axios.create({ baseURL });
+const api = axios.create({
+  baseURL,
+  adapter: DEMO ? demoAdapter : undefined,
+});
 
 // Har request ke saath token bhejte hain.
 api.interceptors.request.use((cfg) => {
@@ -17,10 +28,14 @@ api.interceptors.request.use((cfg) => {
 api.interceptors.response.use(
   (res) => res,
   (err) => {
-    const onLoginPage = ['/login', '/register'].includes(window.location.pathname);
+    // Demo build hash routing use karti hai (#/login), normal build path routing (/login).
+    const path = DEMO ? window.location.hash.slice(1) : window.location.pathname;
+    const onLoginPage = ['/login', '/register'].includes(path);
+
     if (err.response?.status === 401 && !onLoginPage) {
       localStorage.removeItem('elibrary_token');
-      window.location.href = '/login';
+      if (DEMO) window.location.hash = '#/login';
+      else window.location.href = '/login';
     }
     return Promise.reject(err);
   }
