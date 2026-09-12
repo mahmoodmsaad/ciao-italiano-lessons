@@ -25,8 +25,13 @@ export default function Login() {
 
     try {
       const loggedIn = await login(form.email, form.password);
+      const home = loggedIn.role === 'admin' ? '/admin' : '/';
+
+      // Return the user to the page they were trying to reach - but the bare root
+      // is where everyone lands by default, not a deep link, so an admin arriving
+      // there should still start on the admin dashboard.
       const from = location.state?.from?.pathname;
-      navigate(from || (loggedIn.role === 'admin' ? '/admin' : '/'), { replace: true });
+      navigate(from && from !== '/' ? from : home, { replace: true });
     } catch (err) {
       setError(errorMessage(err));
     } finally {
