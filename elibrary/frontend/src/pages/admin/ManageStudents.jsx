@@ -58,7 +58,7 @@ export default function ManageStudents() {
     setError('');
     try {
       await api.delete(`/users/${deleting._id}`);
-      setMessage(`${deleting.name} delete ho gaya.`);
+      setMessage(`${deleting.name} was deleted.`);
       setDeleting(null);
       await load();
     } catch (err) {
@@ -74,7 +74,7 @@ export default function ManageStudents() {
       <header>
         <h1 className="text-2xl font-bold text-slate-900">Students</h1>
         <p className="mt-1 text-sm text-slate-600">
-          Registered students, unki active books aur pending fine.
+          Registered students with their current loans and outstanding fines.
         </p>
       </header>
 
@@ -82,7 +82,7 @@ export default function ManageStudents() {
         className="input max-w-md"
         value={search}
         onChange={(e) => setSearch(e.target.value)}
-        placeholder="Naam, email ya roll number se dhoondein..."
+        placeholder="Search by name, email or roll number..."
       />
 
       <Alert type="success" onClose={() => setMessage('')}>{message}</Alert>
@@ -91,7 +91,7 @@ export default function ManageStudents() {
       {loading ? (
         <PageLoader />
       ) : users.length === 0 ? (
-        <EmptyState icon="🎓" title="Koi student nahi mila" />
+        <EmptyState icon="🎓" title="No students found" />
       ) : (
         <div className="card overflow-x-auto">
           <table className="w-full min-w-[800px]">
@@ -100,7 +100,7 @@ export default function ManageStudents() {
                 <th className="table-th">Student</th>
                 <th className="table-th">Roll no</th>
                 <th className="table-th">Department</th>
-                <th className="table-th">Active books</th>
+                <th className="table-th">Books on loan</th>
                 <th className="table-th">Pending fine</th>
                 <th className="table-th">Status</th>
                 <th className="table-th text-right">Actions</th>
@@ -163,9 +163,9 @@ export default function ManageStudents() {
 
       <ConfirmDialog
         open={Boolean(deleting)}
-        title="Student delete karein?"
-        message={`${deleting?.name} ka account aur record delete ho jayega.`}
-        confirmText="Haan, delete karein"
+        title="Delete this student?"
+        message={`${deleting?.name}'s account and all their records will be deleted.`}
+        confirmText="Yes, delete"
         busy={deleteBusy}
         onConfirm={confirmDelete}
         onClose={() => setDeleting(null)}
@@ -174,7 +174,7 @@ export default function ManageStudents() {
   );
 }
 
-/** Ek student ki poori borrowing history. */
+/** One student's full borrowing history. */
 function StudentHistoryModal({ user, onClose }) {
   const [issues, setIssues] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -202,10 +202,10 @@ function StudentHistoryModal({ user, onClose }) {
       <Alert onClose={() => setError('')}>{error}</Alert>
 
       {loading ? (
-        <PageLoader label="History load ho rahi hai..." />
+        <PageLoader label="Loading history..." />
       ) : issues.length === 0 ? (
         <p className="py-8 text-center text-sm text-slate-500">
-          Is student ne abhi tak koi book issue nahi karwai.
+          This student has not borrowed any books yet.
         </p>
       ) : (
         <div className="overflow-x-auto">

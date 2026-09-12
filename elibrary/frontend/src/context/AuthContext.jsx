@@ -9,7 +9,7 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Page reload par token se user wapas load karte hain.
+  // Restore the signed-in user from the saved token after a page reload.
   useEffect(() => {
     const token = localStorage.getItem(TOKEN_KEY);
     if (!token) {
@@ -64,6 +64,6 @@ export function AuthProvider({ children }) {
 
 export function useAuth() {
   const ctx = useContext(AuthContext);
-  if (!ctx) throw new Error('useAuth ko AuthProvider ke andar use karein.');
+  if (!ctx) throw new Error('useAuth must be used inside an AuthProvider.');
   return ctx;
 }

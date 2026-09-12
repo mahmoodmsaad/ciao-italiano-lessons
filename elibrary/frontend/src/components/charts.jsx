@@ -1,6 +1,6 @@
 /**
- * Chhote SVG charts - koi external chart library istemal nahi hui.
- * Rang validated categorical palette se hain: slot 1 blue, slot 2 orange.
+ * Small hand-drawn SVG charts - no external charting library.
+ * Colors come from a validated categorical palette: slot 1 blue, slot 2 orange.
  */
 import { useState } from 'react';
 
@@ -10,14 +10,14 @@ const VB_W = 640;
 const VB_H = 320;
 const PAD = { top: 16, right: 12, bottom: 34, left: 40 };
 
-/** Axis ke liye "sundar" upper limit - 0, 5, 10, 20, 50, 100... */
+/** A round upper bound for the axis: 4, 5, 10, 20, 50, 100... */
 function niceMax(value) {
   if (value <= 4) return 4;
   const magnitude = 10 ** Math.floor(Math.log10(value));
   return Math.ceil(value / (magnitude / 2)) * (magnitude / 2);
 }
 
-/** Sirf upar ke do corners round - bar baseline par anchored rehta hai. */
+/** Round only the top two corners so the bar stays anchored to the baseline. */
 function topRoundedBar(x, y, width, height, radius = 4) {
   const r = Math.min(radius, width / 2, height);
   if (height <= 0) return '';
@@ -33,14 +33,14 @@ function topRoundedBar(x, y, width, height, radius = 4) {
 }
 
 /**
- * Do series ka grouped bar chart (misal: har mahine issued vs returned).
+ * A grouped bar chart with two series, for example issued vs returned per month.
  * data: [{ label, issued, returned }]
  */
 export function MonthlyBarChart({ data, labels }) {
   const [hover, setHover] = useState(null);
 
   if (!data?.length) {
-    return <p className="py-12 text-center text-sm text-slate-500">Dikhane ke liye data nahi hai.</p>;
+    return <p className="py-12 text-center text-sm text-slate-500">No data to display yet.</p>;
   }
 
   const plotW = VB_W - PAD.left - PAD.right;
@@ -49,7 +49,7 @@ export function MonthlyBarChart({ data, labels }) {
 
   const groupW = plotW / data.length;
   const barW = Math.min(22, (groupW - 12) / 2);
-  const gap = 2; // do bars ke darmiyan surface gap
+  const gap = 2; // surface gap between the two bars
 
   const yFor = (value) => PAD.top + plotH - (value / max) * plotH;
   const ticks = [0, 0.25, 0.5, 0.75, 1].map((t) => Math.round(max * t));
@@ -61,7 +61,7 @@ export function MonthlyBarChart({ data, labels }) {
           viewBox={`0 0 ${VB_W} ${VB_H}`}
           className="h-auto w-full min-w-[460px]"
           role="img"
-          aria-label={`${labels.primary} aur ${labels.secondary} ka mahana muqabla`}
+          aria-label={`${labels.primary} and ${labels.secondary} by month`}
         >
           {ticks.map((tick) => (
             <g key={tick}>
@@ -90,7 +90,7 @@ export function MonthlyBarChart({ data, labels }) {
                 onMouseEnter={() => setHover(index)}
                 onMouseLeave={() => setHover(null)}
               >
-                {/* Poora group hover target hai taake pointer ko bar par exact rakhna na pare */}
+                {/* The whole group is the hover target, so the pointer need not land exactly on a bar */}
                 <rect x={groupX} y={PAD.top} width={groupW} height={plotH} fill="transparent" />
                 {active && (
                   <rect x={groupX} y={PAD.top} width={groupW} height={plotH} fill="#0f172a" opacity="0.04" />
@@ -168,12 +168,12 @@ export function Legend({ items }) {
 }
 
 /**
- * Ek hi series ke horizontal bars (misal: category wise books).
- * Legend nahi chahiye - heading khud bata deti hai ke ye kya hai.
+ * Horizontal bars for a single series, for example books per category.
+ * No legend is needed - the heading already names the series.
  */
 export function CategoryBars({ data }) {
   if (!data?.length) {
-    return <p className="py-12 text-center text-sm text-slate-500">Dikhane ke liye data nahi hai.</p>;
+    return <p className="py-12 text-center text-sm text-slate-500">No data to display yet.</p>;
   }
 
   const max = Math.max(1, ...data.map((d) => d.books));

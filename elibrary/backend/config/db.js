@@ -4,9 +4,9 @@ import { config } from './env.js';
 let memoryServer = null;
 
 /**
- * MONGO_URI set ho to usi se connect karta hai.
- * Warna ek in-memory MongoDB start kar deta hai taake project bina kisi
- * database installation ke chal jaye (sirf demo/testing ke liye).
+ * Connects to MONGO_URI when it is set.
+ * Otherwise it starts an in-memory MongoDB so the project runs without any
+ * database installation (demo and testing only).
  */
 export async function connectDB() {
   let uri = config.mongoUri;
@@ -15,8 +15,8 @@ export async function connectDB() {
     const { MongoMemoryServer } = await import('mongodb-memory-server');
     memoryServer = await MongoMemoryServer.create();
     uri = memoryServer.getUri('elibrary');
-    console.warn('[warn] MONGO_URI set nahi hai - in-memory demo database chalaya ja raha hai.');
-    console.warn('[warn] Restart par saara data delete ho jayega.');
+    console.warn('[warn] MONGO_URI is not set - starting an in-memory demo database instead.');
+    console.warn('[warn] All data will be lost when the server restarts.');
   }
 
   mongoose.set('strictQuery', true);

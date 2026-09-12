@@ -3,8 +3,8 @@ import { useAuth } from '../context/AuthContext.jsx';
 import { PageLoader } from './ui.jsx';
 
 /**
- * Login ke baghair andar nahi ja sakte.
- * role="admin" dene par sirf admin ko access milta hai.
+ * Blocks access unless the user is signed in.
+ * Passing role="admin" restricts the route to admins.
  */
 export default function ProtectedRoute({ children, role }) {
   const { user, loading } = useAuth();

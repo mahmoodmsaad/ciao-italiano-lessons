@@ -33,7 +33,7 @@ export default function BookDetail() {
       const { data } = await api.post('/issues', { bookId: id });
       setBook((b) => ({ ...b, availableCopies: b.availableCopies - 1 }));
       setSuccess(
-        `Book issue ho gayi. Wapas karne ki tareekh: ${new Date(data.issue.dueDate).toLocaleDateString('en-GB')}`
+        `Book issued. Due date: ${new Date(data.issue.dueDate).toLocaleDateString('en-GB')}`
       );
     } catch (err) {
       setError(errorMessage(err));
@@ -46,9 +46,9 @@ export default function BookDetail() {
   if (!book) {
     return (
       <div className="space-y-4">
-        <Alert>{error || 'Book nahi mili.'}</Alert>
+        <Alert>{error || 'Book not found.'}</Alert>
         <button type="button" className="btn-secondary" onClick={() => navigate(-1)}>
-          Wapas jayein
+          Go back
         </button>
       </div>
     );
@@ -70,7 +70,7 @@ export default function BookDetail() {
   return (
     <div className="space-y-6">
       <button type="button" onClick={() => navigate(-1)} className="text-sm text-brand-600 hover:underline">
-        &larr; Wapas catalog par
+        &larr; Back to catalog
       </button>
 
       <div className="grid gap-6 lg:grid-cols-3">
@@ -87,7 +87,7 @@ export default function BookDetail() {
             <div className="flex flex-wrap items-center gap-2">
               <Badge tone="brand">{book.category}</Badge>
               <Badge tone={available ? 'green' : 'red'}>
-                {available ? `${book.availableCopies} copies available` : 'Abhi available nahi'}
+                {available ? `${book.availableCopies} copies available` : 'Not available right now'}
               </Badge>
             </div>
             <h1 className="mt-3 text-2xl font-bold text-slate-900">{book.title}</h1>
@@ -110,11 +110,11 @@ export default function BookDetail() {
 
           {isAdmin ? (
             <Alert type="info">
-              Admin account se borrow nahi hota. Students ko book dene ke liye{' '}
+              Admin accounts do not borrow books. To lend a book to a student, use the{' '}
               <Link to="/admin/issues" className="font-medium underline">
                 Issue / Return
               </Link>{' '}
-              page use karein.
+              page.
             </Alert>
           ) : (
             <div className="flex flex-wrap gap-3 border-t border-slate-200 pt-5">
@@ -125,10 +125,10 @@ export default function BookDetail() {
                 disabled={!available || borrowing}
               >
                 {borrowing && <Spinner className="h-4 w-4 text-white" />}
-                {available ? 'Ye book issue karein' : 'Available nahi'}
+                {available ? 'Borrow this book' : 'Not available'}
               </button>
               <Link to="/my-books" className="btn-secondary">
-                Meri books dekhein
+                View my books
               </Link>
             </div>
           )}

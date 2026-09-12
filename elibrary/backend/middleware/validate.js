@@ -1,6 +1,6 @@
 import { validationResult } from 'express-validator';
 
-/** express-validator ke errors ko ek jaisa JSON response banata hai. */
+/** Turns express-validator errors into one consistent JSON response. */
 export function validate(req, res, next) {
   const errors = validationResult(req);
   if (errors.isEmpty()) return next();

@@ -17,9 +17,9 @@
 }
 
 /*
- * Tailwind v4 mein @apply sirf asli utilities par chalta hai - apni hi
- * component class ko @apply nahi kar sakte. Is liye har variant apni
- * utilities khud likhta hai.
+ * In Tailwind v4 @apply only accepts real utilities - a component class
+ * cannot @apply another component class. So each variant spells out its
+ * own utilities.
  */
 @layer components {
   .btn,
@@ -38,7 +38,7 @@
   .btn-danger {
     @apply bg-red-600 text-white hover:bg-red-700;
   }
-  /* btn-sm hamesha kisi variant ke saath lagti hai, is liye baad mein aati hai */
+  /* btn-sm is always used alongside a variant, so it comes last and wins */
   .btn-sm {
     @apply px-3 py-1.5 text-xs;
   }
@@ -64,7 +64,7 @@
   }
 }
 
-/* Reports page ka print / PDF view */
+/* Print / PDF view for the reports page */
 @media print {
   body {
     @apply bg-white;

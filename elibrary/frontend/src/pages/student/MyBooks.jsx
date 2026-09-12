@@ -6,9 +6,9 @@ import {
 } from '../../components/ui.jsx';
 
 const TABS = [
-  { key: 'issued', label: 'Abhi mere paas' },
-  { key: 'returned', label: 'Wapas ki hui' },
-  { key: '', label: 'Sab' },
+  { key: 'issued', label: 'Currently borrowed' },
+  { key: 'returned', label: 'Returned' },
+  { key: '', label: 'All' },
 ];
 
 export default function MyBooks() {
@@ -65,23 +65,23 @@ export default function MyBooks() {
       <header>
         <h1 className="text-2xl font-bold text-slate-900">My Books</h1>
         <p className="mt-1 text-sm text-slate-600">
-          Aapki issue ki hui books, due dates aur fine ki tafseel.
+          Your borrowed books, due dates and any fines.
         </p>
       </header>
 
       <div className="grid gap-4 sm:grid-cols-3">
-        <StatCard label="Abhi mere paas" value={summary.active} />
+        <StatCard label="Currently borrowed" value={summary.active} />
         <StatCard
           label="Overdue books"
           value={summary.overdue}
           tone="red"
-          hint={summary.overdue > 0 ? 'Jald wapas karein' : 'Sab time par hain'}
+          hint={summary.overdue > 0 ? 'Return them soon' : 'All on time'}
         />
         <StatCard
           label="Pending fine"
           value={formatMoney(summary.fine)}
           tone="amber"
-          hint={summary.fine > 0 ? 'Library counter par jama karwayein' : 'Koi fine nahi'}
+          hint={summary.fine > 0 ? 'Pay at the library counter' : 'No fines'}
         />
       </div>
 
@@ -107,8 +107,8 @@ export default function MyBooks() {
         <PageLoader />
       ) : issues.length === 0 ? (
         <EmptyState
-          title="Yahan abhi kuch nahi hai"
-          hint="Catalog se koi book issue karein, wo yahan nazar aayegi."
+          title="Nothing here yet"
+          hint="Borrow a book from the catalog and it will show up here."
         />
       ) : (
         <div className="space-y-4">
@@ -118,17 +118,17 @@ export default function MyBooks() {
                 <div className="min-w-0 flex-1">
                   <div className="flex flex-wrap items-center gap-2">
                     {issue.status === 'returned' ? (
-                      <Badge tone="slate">Wapas ho gayi</Badge>
+                      <Badge tone="slate">Returned</Badge>
                     ) : issue.isOverdue ? (
-                      <Badge tone="red">{issue.daysOverdue} din late</Badge>
+                      <Badge tone="red">{issue.daysOverdue} days late</Badge>
                     ) : (
-                      <Badge tone="green">Time par</Badge>
+                      <Badge tone="green">On time</Badge>
                     )}
                     {issue.renewCount > 0 && <Badge tone="brand">Renewed</Badge>}
                   </div>
 
                   <h3 className="mt-2 font-semibold text-slate-900">
-                    {issue.book?.title || 'Book delete ho chuki hai'}
+                    {issue.book?.title || 'Book has been deleted'}
                   </h3>
                   <p className="text-sm text-slate-500">{issue.book?.author}</p>
                 </div>
@@ -139,7 +139,7 @@ export default function MyBooks() {
                     className="btn-secondary btn-sm"
                     onClick={() => renew(issue._id)}
                     disabled={busyId === issue._id || issue.isOverdue}
-                    title={issue.isOverdue ? 'Overdue book renew nahi hoti' : 'Due date barhayein'}
+                    title={issue.isOverdue ? 'Overdue books cannot be renewed' : 'Extend the due date'}
                   >
                     Renew
                   </button>
@@ -166,9 +166,9 @@ export default function MyBooks() {
       )}
 
       <p className="text-center text-sm text-slate-500">
-        Nai book chahiye?{' '}
+        Looking for another book?{' '}
         <Link to="/" className="font-medium text-brand-600 hover:underline">
-          Catalog dekhein
+          Browse the catalog
         </Link>
       </p>
     </div>

@@ -24,7 +24,7 @@ export default function Register() {
     setError('');
 
     if (form.password !== form.confirm) {
-      setError('Dono passwords same nahi hain.');
+      setError('The two passwords do not match.');
       return;
     }
 
@@ -41,12 +41,12 @@ export default function Register() {
   };
 
   return (
-    <AuthShell title="Naya student account" subtitle="Library membership ke liye register karein.">
+    <AuthShell title="New student account" subtitle="Register for library membership.">
       <form onSubmit={submit} className="space-y-4">
         <Alert onClose={() => setError('')}>{error}</Alert>
 
         <div>
-          <label className="label" htmlFor="name">Poora naam *</label>
+          <label className="label" htmlFor="name">Full name *</label>
           <input id="name" className="input" value={form.name} onChange={set('name')} required />
         </div>
 
@@ -107,7 +107,7 @@ export default function Register() {
           </div>
 
           <div>
-            <label className="label" htmlFor="confirm">Password dobara *</label>
+            <label className="label" htmlFor="confirm">Confirm password *</label>
             <input
               id="confirm"
               type="password"
@@ -122,14 +122,14 @@ export default function Register() {
 
         <button type="submit" className="btn-primary w-full" disabled={busy}>
           {busy && <Spinner className="h-4 w-4 text-white" />}
-          Account banayein
+          Create account
         </button>
       </form>
 
       <p className="mt-6 text-center text-sm text-slate-600">
-        Pehle se account hai?{' '}
+        Already registered?{' '}
         <Link to="/login" className="font-medium text-brand-600 hover:underline">
-          Login karein
+          Sign in
         </Link>
       </p>
     </AuthShell>

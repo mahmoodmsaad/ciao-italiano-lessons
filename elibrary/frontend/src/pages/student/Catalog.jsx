@@ -17,7 +17,7 @@ export default function Catalog() {
     api.get('/books/categories').then((res) => setCategories(res.data.categories)).catch(() => {});
   }, []);
 
-  // Search box par typing rukne ke 400ms baad hi request bhejte hain.
+  // Wait 400ms after the user stops typing before sending the request.
   useEffect(() => {
     const timer = setTimeout(
       () => setFilters((f) => (f.search === search ? f : { ...f, search, page: 1 })),
@@ -51,7 +51,7 @@ export default function Catalog() {
       <header>
         <h1 className="text-2xl font-bold text-slate-900">Book Catalog</h1>
         <p className="mt-1 text-sm text-slate-600">
-          Library mein mojood books browse karein aur issue karwayein.
+          Browse the library collection and borrow the books you need.
         </p>
       </header>
 
@@ -63,14 +63,14 @@ export default function Catalog() {
             className="input"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Title, author ya ISBN se dhoondein..."
+            placeholder="Search by title, author or ISBN..."
           />
         </div>
 
         <div>
           <label className="label" htmlFor="category">Category</label>
           <select id="category" className="input" value={filters.category} onChange={set('category')}>
-            <option value="">Sab categories</option>
+            <option value="">All categories</option>
             {categories.map((c) => (
               <option key={c} value={c}>{c}</option>
             ))}
@@ -78,9 +78,9 @@ export default function Catalog() {
         </div>
 
         <div>
-          <label className="label" htmlFor="sort">Tarteeb</label>
+          <label className="label" htmlFor="sort">Sort by</label>
           <select id="sort" className="input" value={filters.sort} onChange={set('sort')}>
-            <option value="newest">Nai pehle</option>
+            <option value="newest">Newest first</option>
             <option value="title">Title (A-Z)</option>
             <option value="author">Author (A-Z)</option>
             <option value="year">Publish year</option>
@@ -96,7 +96,7 @@ export default function Catalog() {
               setFilters((f) => ({ ...f, available: e.target.checked ? 'true' : '', page: 1 }))
             }
           />
-          Sirf available books dikhayein
+          Show available books only
         </label>
       </div>
 
@@ -106,12 +106,12 @@ export default function Catalog() {
         <PageLoader />
       ) : books.length === 0 ? (
         <EmptyState
-          title="Koi book nahi mili"
-          hint="Search ya filters badal kar dobara koshish karein."
+          title="No books found"
+          hint="Try a different search term or filter."
         />
       ) : (
         <>
-          <p className="text-sm text-slate-500">{meta.total} books mili</p>
+          <p className="text-sm text-slate-500">{meta.total} books found</p>
           <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {books.map((book) => (
               <BookCard key={book._id} book={book} />

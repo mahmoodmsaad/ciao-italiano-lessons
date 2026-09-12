@@ -1,10 +1,10 @@
 /**
- * Poore issue/return flow ka test - ise chalane ke liye asli MongoDB chahiye.
+ * End-to-end test of the borrow/return flow. Needs a real MongoDB.
  *
  *   MONGO_URI=mongodb://127.0.0.1:27017/elibrary_test npm test
  *
- * MONGO_URI na ho to ye file skip ho jati hai (baaki tests phir bhi chalte hain).
- * Warning: ye test database ka data delete karta hai - alag test DB use karein.
+ * Without MONGO_URI this file is skipped and the other tests still run.
+ * Warning: it wipes the database it connects to, so use a separate test DB.
  */
 import test, { before, after, describe } from 'node:test';
 import assert from 'node:assert/strict';
@@ -19,7 +19,7 @@ import { addDays } from '../utils/fine.js';
 
 const uri = process.env.MONGO_URI;
 
-describe('Issue / return flow', { skip: uri ? false : 'MONGO_URI set nahi hai' }, () => {
+describe('Issue / return flow', { skip: uri ? false : 'MONGO_URI is not set' }, () => {
   let server;
   let baseUrl;
   let adminToken;
@@ -66,7 +66,7 @@ describe('Issue / return flow', { skip: uri ? false : 'MONGO_URI set nahi hai' }
     await mongoose.disconnect();
   });
 
-  test('student register aur login kar sakta hai', async () => {
+  test('a student can register and sign in', async () => {
     const res = await api('/api/auth/register', {
       method: 'POST',
       body: {
@@ -81,14 +81,14 @@ describe('Issue / return flow', { skip: uri ? false : 'MONGO_URI set nahi hai' }
 
     const body = await res.json();
     assert.ok(body.token);
-    assert.equal(body.user.role, 'student', 'register hamesha student role de');
-    assert.equal(body.user.password, undefined, 'password kabhi response mein na jaye');
+    assert.equal(body.user.role, 'student', 'register always assigns the student role');
+    assert.equal(body.user.password, undefined, 'the password must never appear in a response');
 
     studentToken = body.token;
     studentId = body.user._id;
   });
 
-  test('duplicate email register nahi hota', async () => {
+  test('a duplicate email is rejected', async () => {
     const res = await api('/api/auth/register', {
       method: 'POST',
       body: { name: 'Dusra', email: 'student@test.pk', password: 'student123', rollNo: 'BSCS-2' },
@@ -96,7 +96,7 @@ describe('Issue / return flow', { skip: uri ? false : 'MONGO_URI set nahi hai' }
     assert.equal(res.status, 409);
   });
 
-  test('admin book add kar sakta hai, student nahi', async () => {
+  test('an admin can add a book, a student cannot', async () => {
     const bookBody = {
       title: 'Test Book',
       author: 'Test Author',
@@ -106,7 +106,7 @@ describe('Issue / return flow', { skip: uri ? false : 'MONGO_URI set nahi hai' }
     };
 
     const denied = await api('/api/books', { method: 'POST', token: studentToken, body: bookBody });
-    assert.equal(denied.status, 403, 'student ko book add karne ki ijazat nahi honi chahiye');
+    assert.equal(denied.status, 403, 'a student must not be allowed to add books');
 
     const res = await api('/api/books', { method: 'POST', token: adminToken, body: bookBody });
     assert.equal(res.status, 201);
@@ -116,7 +116,7 @@ describe('Issue / return flow', { skip: uri ? false : 'MONGO_URI set nahi hai' }
     bookId = book._id;
   });
 
-  test('search se book milti hai', async () => {
+  test('search finds the book', async () => {
     const res = await api('/api/books?search=Test%20Author', { token: studentToken });
     assert.equal(res.status, 200);
 
@@ -125,7 +125,7 @@ describe('Issue / return flow', { skip: uri ? false : 'MONGO_URI set nahi hai' }
     assert.equal(books[0].isbn, '1112223334445');
   });
 
-  test('student book borrow kar sakta hai aur copy kam ho jati hai', async () => {
+  test('a student can borrow a book and the available count drops', async () => {
     const res = await api('/api/issues', { method: 'POST', token: studentToken, body: { bookId } });
     assert.equal(res.status, 201);
 
@@ -133,10 +133,10 @@ describe('Issue / return flow', { skip: uri ? false : 'MONGO_URI set nahi hai' }
     assert.equal(book.availableCopies, 0);
   });
 
-  test('copy available na ho to borrow reject hota hai', async () => {
+  test('borrowing is rejected when no copy is available', async () => {
     const admin = await User.findOne({ role: 'admin' });
     const other = await User.create({
-      name: 'Doosra Student',
+      name: 'Second Student',
       email: 'other@test.pk',
       password: 'student123',
       rollNo: 'BSCS-9',
@@ -151,17 +151,17 @@ describe('Issue / return flow', { skip: uri ? false : 'MONGO_URI set nahi hai' }
     const res = await api('/api/issues', { method: 'POST', token: otherToken, body: { bookId } });
     assert.equal(res.status, 409);
 
-    assert.ok(admin, 'admin mojood hona chahiye');
+    assert.ok(admin, 'the admin should exist');
     await other.deleteOne();
   });
 
-  test('wohi book dobara issue nahi hoti', async () => {
+  test('the same book cannot be issued twice to one student', async () => {
     const res = await api('/api/issues', { method: 'POST', token: studentToken, body: { bookId } });
     assert.equal(res.status, 409);
   });
 
-  test('max books limit lagti hai', async () => {
-    // Limit tak books banakar issue karte hain.
+  test('the maximum-books limit is enforced', async () => {
+    // Create and issue books up to the limit.
     for (let i = 0; i < config.maxBooksPerStudent; i += 1) {
       const created = await Book.create({
         title: `Filler ${i}`,
@@ -178,17 +178,17 @@ describe('Issue / return flow', { skip: uri ? false : 'MONGO_URI set nahi hai' }
         body: { bookId: created._id },
       });
 
-      // Pehli book pehle hi issued hai, is liye limit jaldi lag jayegi.
+      // One book is already on loan, so the limit is reached sooner.
       if (res.status === 409) {
         const body = await res.json();
         assert.match(body.message, /Limit poori/);
         return;
       }
     }
-    assert.fail('max books limit lagni chahiye thi');
+    assert.fail('the maximum-books limit should have been reached');
   });
 
-  test('overdue book par fine banta hai aur return par copy wapas aati hai', async () => {
+  test('an overdue loan accrues a fine and returning it frees the copy', async () => {
     const issue = await Issue.findOne({ book: bookId, status: 'issued' });
     issue.dueDate = addDays(new Date(), -3);
     await issue.save();
@@ -196,14 +196,14 @@ describe('Issue / return flow', { skip: uri ? false : 'MONGO_URI set nahi hai' }
     const myRes = await api('/api/issues/my', { token: studentToken });
     const { issues } = await myRes.json();
     const mine = issues.find((i) => String(i._id) === String(issue._id));
-    assert.equal(mine.fine, 3 * config.finePerDay, 'live fine 3 din ka hona chahiye');
+    assert.equal(mine.fine, 3 * config.finePerDay, 'the live fine should cover three days');
     assert.equal(mine.isOverdue, true);
 
     const denied = await api(`/api/issues/${issue._id}/return`, {
       method: 'PUT',
       token: studentToken,
     });
-    assert.equal(denied.status, 403, 'return sirf admin kar sakta hai');
+    assert.equal(denied.status, 403, 'only an admin can process a return');
 
     const res = await api(`/api/issues/${issue._id}/return`, { method: 'PUT', token: adminToken });
     assert.equal(res.status, 200);
@@ -213,16 +213,16 @@ describe('Issue / return flow', { skip: uri ? false : 'MONGO_URI set nahi hai' }
     assert.equal(saved.fine, 3 * config.finePerDay);
 
     const book = await Book.findById(bookId);
-    assert.equal(book.availableCopies, 1, 'return ke baad copy wapas available honi chahiye');
+    assert.equal(book.availableCopies, 1, 'the copy should be available again after the return');
   });
 
-  test('issued book delete nahi hoti', async () => {
+  test('a book that is on loan cannot be deleted', async () => {
     const active = await Issue.findOne({ status: 'issued' });
     const res = await api(`/api/books/${active.book}`, { method: 'DELETE', token: adminToken });
     assert.equal(res.status, 409);
   });
 
-  test('admin reports summary deta hai', async () => {
+  test('the admin reports summary responds', async () => {
     const res = await api('/api/reports/summary', { token: adminToken });
     assert.equal(res.status, 200);
 
@@ -230,10 +230,10 @@ describe('Issue / return flow', { skip: uri ? false : 'MONGO_URI set nahi hai' }
     assert.equal(typeof stats.totalBooks, 'number');
     assert.ok(stats.totalBooks > 0);
     assert.equal(typeof stats.pendingFine, 'number');
-    assert.ok(Number.isFinite(stats.pendingFine), 'pendingFine NaN nahi hona chahiye');
+    assert.ok(Number.isFinite(stats.pendingFine), 'pendingFine must not be NaN');
   });
 
-  test('blocked student login nahi kar sakta', async () => {
+  test('a blocked student cannot sign in', async () => {
     await User.updateOne({ _id: studentId }, { isActive: false });
 
     const res = await api('/api/auth/login', {

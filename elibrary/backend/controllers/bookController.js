@@ -18,7 +18,7 @@ export const listBooks = asyncHandler(async (req, res) => {
   const filter = {};
 
   if (search.trim()) {
-    // Regex isliye taake partial typing par bhi result aaye (text index se nahi aata).
+    // A regex is used so partial words match too, which a text index does not do.
     const rx = new RegExp(search.trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i');
     filter.$or = [{ title: rx }, { author: rx }, { isbn: rx }, { publisher: rx }];
   }
@@ -42,7 +42,7 @@ export const listBooks = asyncHandler(async (req, res) => {
   });
 });
 
-// GET /api/books/categories - filter dropdown ke liye
+// GET /api/books/categories - populates the filter dropdown
 export const listCategories = asyncHandler(async (req, res) => {
   const categories = await Book.distinct('category');
   res.json({ categories: categories.filter(Boolean).sort() });
@@ -51,7 +51,7 @@ export const listCategories = asyncHandler(async (req, res) => {
 // GET /api/books/:id
 export const getBook = asyncHandler(async (req, res) => {
   const book = await Book.findById(req.params.id);
-  if (!book) return res.status(404).json({ message: 'Book nahi mili.' });
+  if (!book) return res.status(404).json({ message: 'Book not found.' });
   res.json({ book });
 });
 
@@ -69,7 +69,7 @@ export const createBook = asyncHandler(async (req, res) => {
 // PUT /api/books/:id  (admin)
 export const updateBook = asyncHandler(async (req, res) => {
   const book = await Book.findById(req.params.id);
-  if (!book) return res.status(404).json({ message: 'Book nahi mili.' });
+  if (!book) return res.status(404).json({ message: 'Book not found.' });
 
   const issuedCount = book.totalCopies - book.availableCopies;
 
@@ -85,7 +85,7 @@ export const updateBook = asyncHandler(async (req, res) => {
     const newTotal = Number(req.body.totalCopies);
     if (newTotal < issuedCount) {
       return res.status(400).json({
-        message: `Total copies ${issuedCount} se kam nahi ho sakti - itni copies abhi issued hain.`,
+        message: `Total copies cannot be less than ${issuedCount} - that many copies are currently issued.`,
       });
     }
     book.totalCopies = newTotal;
@@ -99,15 +99,15 @@ export const updateBook = asyncHandler(async (req, res) => {
 // DELETE /api/books/:id  (admin)
 export const deleteBook = asyncHandler(async (req, res) => {
   const book = await Book.findById(req.params.id);
-  if (!book) return res.status(404).json({ message: 'Book nahi mili.' });
+  if (!book) return res.status(404).json({ message: 'Book not found.' });
 
   const active = await Issue.countDocuments({ book: book._id, status: 'issued' });
   if (active > 0) {
     return res.status(409).json({
-      message: 'Ye book abhi issued hai - pehle return karwayein, phir delete karein.',
+      message: 'This book is currently issued - process the return before deleting it.',
     });
   }
 
   await book.deleteOne();
-  res.json({ message: 'Book delete ho gayi.' });
+  res.json({ message: 'Book deleted.' });
 });

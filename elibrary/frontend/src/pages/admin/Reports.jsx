@@ -45,22 +45,22 @@ export default function Reports() {
         <div>
           <h1 className="text-2xl font-bold text-slate-900">Reports</h1>
           <p className="mt-1 text-sm text-slate-600">
-            Library ki activity, categories aur overdue books ka khulasa.
+            Library activity, collection breakdown and overdue books.
           </p>
         </div>
 
         <div className="flex items-end gap-3 print:hidden">
           <div>
-            <label className="label" htmlFor="months">Muddat</label>
+            <label className="label" htmlFor="months">Period</label>
             <select
               id="months"
               className="input"
               value={months}
               onChange={(e) => setMonths(Number(e.target.value))}
             >
-              <option value={3}>Pichlay 3 mahine</option>
-              <option value={6}>Pichlay 6 mahine</option>
-              <option value={12}>Pichlay 12 mahine</option>
+              <option value={3}>Last 3 months</option>
+              <option value={6}>Last 6 months</option>
+              <option value={12}>Last 12 months</option>
             </select>
           </div>
           <button type="button" className="btn-secondary" onClick={() => window.print()}>
@@ -74,7 +74,7 @@ export default function Reports() {
       {stats && (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <StatCard label="Total books" value={stats.totalBooks} hint={`${stats.totalCopies} copies`} />
-          <StatCard label="Abhi issued" value={stats.activeLoans} tone="amber" />
+          <StatCard label="On loan" value={stats.activeLoans} tone="amber" />
           <StatCard label="Overdue" value={stats.overdueCount} tone="red" />
           <StatCard label="Fine collected" value={formatMoney(stats.fineCollected)} tone="green" />
         </div>
@@ -82,25 +82,25 @@ export default function Reports() {
 
       <div className="grid gap-6 lg:grid-cols-5">
         <section className="card p-6 lg:col-span-3">
-          <h2 className="font-semibold text-slate-900">Mahana activity</h2>
-          <p className="mb-4 text-sm text-slate-500">Har mahine kitni books issue aur wapas huin.</p>
+          <h2 className="font-semibold text-slate-900">Monthly activity</h2>
+          <p className="mb-4 text-sm text-slate-500">Books borrowed and returned each month.</p>
           <MonthlyBarChart data={series} labels={{ primary: 'Issued', secondary: 'Returned' }} />
         </section>
 
         <section className="card p-6 lg:col-span-2">
-          <h2 className="font-semibold text-slate-900">Category wise books</h2>
-          <p className="mb-4 text-sm text-slate-500">Har category mein kitni alag books hain.</p>
+          <h2 className="font-semibold text-slate-900">Books by category</h2>
+          <p className="mb-4 text-sm text-slate-500">How many distinct titles each category holds.</p>
           <CategoryBars data={categories} />
         </section>
       </div>
 
       <section className="card overflow-hidden">
         <div className="border-b border-slate-200 px-6 py-4">
-          <h2 className="font-semibold text-slate-900">Sab se zyada issue hone wali books</h2>
+          <h2 className="font-semibold text-slate-900">Most borrowed books</h2>
         </div>
 
         {popular.length === 0 ? (
-          <p className="py-10 text-center text-sm text-slate-500">Abhi koi record nahi hai.</p>
+          <p className="py-10 text-center text-sm text-slate-500">No records yet.</p>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full min-w-[560px]">
@@ -110,7 +110,7 @@ export default function Reports() {
                   <th className="table-th">Title</th>
                   <th className="table-th">Author</th>
                   <th className="table-th">Category</th>
-                  <th className="table-th text-right">Kitni baar issue hui</th>
+                  <th className="table-th text-right">Times borrowed</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
@@ -137,7 +137,7 @@ export default function Reports() {
 
         {overdue.length === 0 ? (
           <div className="p-6">
-            <EmptyState icon="✅" title="Koi book overdue nahi hai" hint="Sab students time par wapas kar rahe hain." />
+            <EmptyState icon="✅" title="No books are overdue" hint="Every student is returning on time." />
           </div>
         ) : (
           <div className="overflow-x-auto">
@@ -162,7 +162,7 @@ export default function Reports() {
                     <td className="table-td">{issue.student?.rollNo}</td>
                     <td className="table-td">{issue.book?.title}</td>
                     <td className="table-td whitespace-nowrap">{formatDate(issue.dueDate)}</td>
-                    <td className="table-td">{issue.daysOverdue} din</td>
+                    <td className="table-td">{issue.daysOverdue} days</td>
                     <td className="table-td text-right font-semibold text-red-600">
                       {formatMoney(issue.fine)}
                     </td>

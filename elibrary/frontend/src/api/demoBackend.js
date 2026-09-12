@@ -1,13 +1,13 @@
 /**
- * Demo mode ka backend - poora browser ke andar chalta hai.
+ * The demo-mode backend, running entirely inside the browser.
  *
- * Iska maqsad sirf ye hai ke app bina Node server aur bina MongoDB ke chal sake,
- * taake live demo link share ki ja sake (misal presentation ya viva ke liye).
- * Ye asli backend ke bilkul wohi endpoints, wohi rules aur wohi error messages
- * follow karta hai - farq sirf ye hai ke data browser ki localStorage mein rehta hai.
+ * Its only purpose is to let the app run without Node or MongoDB, so a live
+ * demo link can be shared (for a presentation or a viva, say). It mirrors the
+ * real backend exactly - same endpoints, same rules, same error messages - and
+ * differs only in keeping its data in the browser's localStorage.
  *
- * Chalane ke liye:  VITE_DEMO=true npm run build
- * Asli project isse chhoota nahi - normal build mein ye file load hi nahi hoti.
+ * Build it with:  VITE_DEMO=true npm run build
+ * The real project is untouched: a normal build never loads this file.
  */
 
 const STORE_KEY = 'elibrary_demo_db';
@@ -39,7 +39,7 @@ const calculateFine = (dueDate, asOf) => daysOverdue(dueDate, asOf) * RULES.fine
 
 const escapeRx = (text) => text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
-/** Error jise adapter HTTP response mein badal deta hai. */
+/** An error the adapter turns into an HTTP response. */
 class ApiError extends Error {
   constructor(status, message) {
     super(message);
@@ -47,7 +47,7 @@ class ApiError extends Error {
   }
 }
 
-const notFound = (what) => new ApiError(404, `${what} nahi mili.`);
+const notFound = (what) => new ApiError(404, `${what} not found.`);
 
 /* --------------------------------------------------------------- seed data */
 
@@ -59,18 +59,18 @@ const SEED_USERS = [
 ];
 
 const SEED_BOOKS = [
-  ['Introduction to Algorithms', 'Thomas H. Cormen', '9780262046305', 'Computer Science', 'MIT Press', 2022, '4th', 'CS-A-01', 4, 'Algorithms ki comprehensive kitaab - sorting, graphs, dynamic programming aur complexity analysis.'],
-  ['Clean Code: A Handbook of Agile Software Craftsmanship', 'Robert C. Martin', '9780132350884', 'Software Engineering', 'Prentice Hall', 2008, '1st', 'SE-B-04', 3, 'Saaf, readable aur maintainable code likhne ke usool aur practical examples.'],
-  ['Database System Concepts', 'Abraham Silberschatz', '9780078022159', 'Database', 'McGraw-Hill', 2019, '7th', 'DB-C-02', 5, 'Relational model, SQL, normalization, transactions aur query processing.'],
-  ['Computer Networks', 'Andrew S. Tanenbaum', '9780132126953', 'Networking', 'Pearson', 2021, '6th', 'NW-D-03', 3, 'Network layers, protocols, routing aur network security ka detailed taaruf.'],
-  ['Operating System Concepts', 'Abraham Silberschatz', '9781119800361', 'Operating Systems', 'Wiley', 2021, '10th', 'OS-A-07', 4, 'Processes, threads, scheduling, memory management aur file systems.'],
-  ['Artificial Intelligence: A Modern Approach', 'Stuart Russell', '9780134610993', 'Artificial Intelligence', 'Pearson', 2020, '4th', 'AI-E-01', 2, 'Search, knowledge representation, machine learning aur intelligent agents.'],
-  ['Eloquent JavaScript', 'Marijn Haverbeke', '9781593279509', 'Web Development', 'No Starch Press', 2018, '3rd', 'WD-F-02', 3, 'JavaScript language, DOM, asynchronous programming aur Node.js basics.'],
-  ['Software Engineering', 'Ian Sommerville', '9780133943030', 'Software Engineering', 'Pearson', 2015, '10th', 'SE-B-01', 4, 'Requirements engineering, design, testing aur project management.'],
-  ['Discrete Mathematics and Its Applications', 'Kenneth H. Rosen', '9781259676512', 'Mathematics', 'McGraw-Hill', 2018, '8th', 'MT-G-05', 5, 'Logic, sets, relations, graph theory aur combinatorics.'],
-  ['The Pragmatic Programmer', 'Andrew Hunt', '9780135957059', 'Software Engineering', 'Addison-Wesley', 2019, '2nd', 'SE-B-09', 2, 'Practical tips aur habits jo developer ko behtar banate hain.'],
-  ['Head First Design Patterns', 'Eric Freeman', '9781492078005', 'Software Engineering', "O'Reilly", 2021, '2nd', 'SE-B-11', 3, 'Design patterns ko asaan visual tareeqe se samjhaya gaya hai.'],
-  ['Cryptography and Network Security', 'William Stallings', '9780134444284', 'Information Security', 'Pearson', 2017, '7th', 'IS-H-02', 2, 'Encryption algorithms, key management aur network security protocols.'],
+  ['Introduction to Algorithms', 'Thomas H. Cormen', '9780262046305', 'Computer Science', 'MIT Press', 2022, '4th', 'CS-A-01', 4, 'A comprehensive reference on sorting, graphs, dynamic programming and complexity analysis.'],
+  ['Clean Code: A Handbook of Agile Software Craftsmanship', 'Robert C. Martin', '9780132350884', 'Software Engineering', 'Prentice Hall', 2008, '1st', 'SE-B-04', 3, 'Principles and worked examples for writing clean, readable, maintainable code.'],
+  ['Database System Concepts', 'Abraham Silberschatz', '9780078022159', 'Database', 'McGraw-Hill', 2019, '7th', 'DB-C-02', 5, 'Relational model, SQL, normalization, transactions and query processing.'],
+  ['Computer Networks', 'Andrew S. Tanenbaum', '9780132126953', 'Networking', 'Pearson', 2021, '6th', 'NW-D-03', 3, 'A detailed introduction to network layers, protocols, routing and network security.'],
+  ['Operating System Concepts', 'Abraham Silberschatz', '9781119800361', 'Operating Systems', 'Wiley', 2021, '10th', 'OS-A-07', 4, 'Processes, threads, scheduling, memory management and file systems.'],
+  ['Artificial Intelligence: A Modern Approach', 'Stuart Russell', '9780134610993', 'Artificial Intelligence', 'Pearson', 2020, '4th', 'AI-E-01', 2, 'Search, knowledge representation, machine learning and intelligent agents.'],
+  ['Eloquent JavaScript', 'Marijn Haverbeke', '9781593279509', 'Web Development', 'No Starch Press', 2018, '3rd', 'WD-F-02', 3, 'JavaScript language, DOM, asynchronous programming and Node.js basics.'],
+  ['Software Engineering', 'Ian Sommerville', '9780133943030', 'Software Engineering', 'Pearson', 2015, '10th', 'SE-B-01', 4, 'Requirements engineering, design, testing and project management.'],
+  ['Discrete Mathematics and Its Applications', 'Kenneth H. Rosen', '9781259676512', 'Mathematics', 'McGraw-Hill', 2018, '8th', 'MT-G-05', 5, 'Logic, sets, relations, graph theory and combinatorics.'],
+  ['The Pragmatic Programmer', 'Andrew Hunt', '9780135957059', 'Software Engineering', 'Addison-Wesley', 2019, '2nd', 'SE-B-09', 2, 'Practical tips and habits that make you a better developer.'],
+  ['Head First Design Patterns', 'Eric Freeman', '9781492078005', 'Software Engineering', "O'Reilly", 2021, '2nd', 'SE-B-11', 3, 'Design patterns explained in an approachable, highly visual style.'],
+  ['Cryptography and Network Security', 'William Stallings', '9780134444284', 'Information Security', 'Pearson', 2017, '7th', 'IS-H-02', 2, 'Encryption algorithms, key management and network security protocols.'],
 ];
 
 function buildSeed() {
@@ -99,7 +99,7 @@ function buildSeed() {
   const students = users.filter((u) => u.role === 'student');
   const issues = [];
 
-  // Demo records: ek normal, ek overdue, ek doosre student ka, ek returned.
+  // Demo records: one on time, one overdue, another student's loan, one returned.
   const plans = [
     { student: students[0], book: books[0], issuedDaysAgo: 3 },   // on time
     { student: students[1], book: books[2], issuedDaysAgo: 25 },  // overdue
@@ -107,7 +107,7 @@ function buildSeed() {
     { student: students[2], book: books[1], issuedDaysAgo: 40, returnedDaysAgo: 30 },
   ];
 
-  // Purani activity taake reports ka chart khaali na lage.
+  // Older activity so the reports chart is not empty.
   const history = [];
   for (let month = 5; month >= 1; month -= 1) {
     const count = [4, 9, 3, 11, 7][5 - month];
@@ -162,7 +162,7 @@ function load() {
       return db;
     }
   } catch {
-    // Private window ya blocked storage - memory mein chala lete hain.
+    // Private window or blocked storage - fall back to memory.
   }
   db = buildSeed();
   save();
@@ -173,11 +173,11 @@ function save() {
   try {
     localStorage.setItem(STORE_KEY, JSON.stringify(db));
   } catch {
-    // Storage na mile to bhi app chalti rahe - data sirf is session tak rahega.
+    // Keep working without storage; the data then lasts only for this session.
   }
 }
 
-/** Demo data wapas shuru wali haalat par le aata hai. */
+/** Resets the demo data to its starting state. */
 export function resetDemoData() {
   db = buildSeed();
   save();
@@ -208,7 +208,7 @@ const bookRef = (b) =>
 const studentRef = (u) =>
   u && { _id: u._id, name: u.name, email: u.email, rollNo: u.rollNo, department: u.department, phone: u.phone };
 
-/** Issue record ko populated + live fine ke saath bhejta hai (asli API ki tarah). */
+/** Returns the record populated and with a live fine, just like the real API. */
 function shapeIssue(issue) {
   const out = {
     ...issue,
@@ -234,17 +234,17 @@ const newest = (a, b) => new Date(b.createdAt) - new Date(a.createdAt);
 const tokenFor = (user) => `demo.${user._id}`;
 
 function currentUser(token) {
-  if (!token?.startsWith('demo.')) throw new ApiError(401, 'Token invalid ya expire ho chuka hai.');
+  if (!token?.startsWith('demo.')) throw new ApiError(401, 'Invalid or expired token.');
 
   const user = db.users.find((u) => u._id === token.slice(5));
-  if (!user) throw new ApiError(401, 'User ab maujood nahi hai.');
-  if (!user.isActive) throw new ApiError(403, 'Aapka account block hai. Admin se rabta karein.');
+  if (!user) throw new ApiError(401, 'This user no longer exists.');
+  if (!user.isActive) throw new ApiError(403, 'Your account is blocked. Please contact the library admin.');
 
   return user;
 }
 
 const requireAdmin = (user) => {
-  if (user.role !== 'admin') throw new ApiError(403, 'Is kaam ki ijazat nahi hai.');
+  if (user.role !== 'admin') throw new ApiError(403, 'You are not allowed to perform this action.');
   return user;
 };
 
@@ -255,15 +255,15 @@ const routes = [
   ['POST', /^\/auth\/register$/, (ctx) => {
     const { name, email, password, rollNo, department = '', phone = '' } = ctx.body;
 
-    if (!name?.trim()) throw new ApiError(400, 'Naam likhna zaroori hai.');
-    if (!email?.includes('@')) throw new ApiError(400, 'Sahi email likhein.');
-    if (!password || password.length < 6) throw new ApiError(400, 'Password kam se kam 6 characters ka ho.');
-    if (!rollNo?.trim()) throw new ApiError(400, 'Roll number likhna zaroori hai.');
+    if (!name?.trim()) throw new ApiError(400, 'Name is required.');
+    if (!email?.includes('@')) throw new ApiError(400, 'Enter a valid email address.');
+    if (!password || password.length < 6) throw new ApiError(400, 'Password must be at least 6 characters.');
+    if (!rollNo?.trim()) throw new ApiError(400, 'Roll number is required.');
     if (db.users.some((u) => u.email === email.toLowerCase())) {
-      throw new ApiError(409, 'Ye email pehle se register hai.');
+      throw new ApiError(409, 'This email is already registered.');
     }
 
-    // Role hamesha student - admin sirf seed data mein hota hai.
+    // The role is always student - the admin exists only in the seed data.
     const user = {
       _id: oid(),
       name: name.trim(),
@@ -287,9 +287,9 @@ const routes = [
     const user = db.users.find((u) => u.email === email);
 
     if (!user || user.password !== ctx.body.password) {
-      throw new ApiError(401, 'Email ya password ghalat hai.');
+      throw new ApiError(401, 'Incorrect email or password.');
     }
-    if (!user.isActive) throw new ApiError(403, 'Aapka account block hai. Admin se rabta karein.');
+    if (!user.isActive) throw new ApiError(403, 'Your account is blocked. Please contact the library admin.');
 
     return [200, { token: tokenFor(user), user: publicUser(user) }];
   }],
@@ -309,14 +309,14 @@ const routes = [
     const user = ctx.auth();
     const { currentPassword, newPassword } = ctx.body;
 
-    if (user.password !== currentPassword) throw new ApiError(401, 'Purana password ghalat hai.');
+    if (user.password !== currentPassword) throw new ApiError(401, 'Current password is incorrect.');
     if (!newPassword || newPassword.length < 6) {
-      throw new ApiError(400, 'Naya password kam se kam 6 characters ka ho.');
+      throw new ApiError(400, 'New password must be at least 6 characters.');
     }
 
     user.password = newPassword;
     save();
-    return [200, { message: 'Password update ho gaya.' }];
+    return [200, { message: 'Password updated.' }];
   }],
 
   /* ---------- books ---------- */
@@ -370,11 +370,11 @@ const routes = [
     requireAdmin(ctx.auth());
     const { title, author, isbn, category } = ctx.body;
 
-    if (!title?.trim()) throw new ApiError(400, 'Book ka title likhein.');
-    if (!author?.trim()) throw new ApiError(400, 'Author ka naam likhein.');
-    if (!isbn?.trim()) throw new ApiError(400, 'ISBN likhein.');
-    if (!category?.trim()) throw new ApiError(400, 'Category select karein.');
-    if (db.books.some((b) => b.isbn === isbn.trim())) throw new ApiError(409, 'Ye isbn pehle se mojood hai.');
+    if (!title?.trim()) throw new ApiError(400, 'Book title is required.');
+    if (!author?.trim()) throw new ApiError(400, 'Author name is required.');
+    if (!isbn?.trim()) throw new ApiError(400, 'ISBN is required.');
+    if (!category?.trim()) throw new ApiError(400, 'Category is required.');
+    if (db.books.some((b) => b.isbn === isbn.trim())) throw new ApiError(409, 'This isbn already exists.');
 
     const totalCopies = Number(ctx.body.totalCopies) || 1;
     const book = {
@@ -406,7 +406,7 @@ const routes = [
     if (ctx.body.totalCopies !== undefined) {
       const newTotal = Number(ctx.body.totalCopies);
       if (newTotal < issuedCount) {
-        throw new ApiError(400, `Total copies ${issuedCount} se kam nahi ho sakti - itni copies abhi issued hain.`);
+        throw new ApiError(400, `Total copies cannot be less than ${issuedCount} - that many copies are currently issued.`);
       }
       book.totalCopies = newTotal;
       book.availableCopies = newTotal - issuedCount;
@@ -422,11 +422,11 @@ const routes = [
     if (index === -1) throw notFound('Book');
 
     const active = db.issues.some((i) => i.book === ctx.params[0] && i.status === 'issued');
-    if (active) throw new ApiError(409, 'Ye book abhi issued hai - pehle return karwayein, phir delete karein.');
+    if (active) throw new ApiError(409, 'This book is currently issued - process the return before deleting it.');
 
     db.books.splice(index, 1);
     save();
-    return [200, { message: 'Book delete ho gayi.' }];
+    return [200, { message: 'Book deleted.' }];
   }],
 
   /* ---------- issues ---------- */
@@ -459,27 +459,27 @@ const routes = [
     const isAdmin = user.role === 'admin';
     const studentId = isAdmin ? ctx.body.studentId : user._id;
 
-    if (!studentId) throw new ApiError(400, 'Student select karein.');
+    if (!studentId) throw new ApiError(400, 'Please select a student.');
 
     const student = db.users.find((u) => u._id === studentId && u.role === 'student');
     if (!student) throw notFound('Student');
-    if (!student.isActive) throw new ApiError(403, 'Ye student account block hai.');
+    if (!student.isActive) throw new ApiError(403, 'This student account is blocked.');
 
     const activeLoans = db.issues.filter((i) => i.student === studentId && i.status === 'issued');
 
     if (activeLoans.length >= RULES.maxBooksPerStudent) {
-      throw new ApiError(409, `Limit poori ho gayi - ek waqt mein sirf ${RULES.maxBooksPerStudent} books issue ho sakti hain.`);
+      throw new ApiError(409, `Borrowing limit reached - a student may hold only ${RULES.maxBooksPerStudent} books at a time.`);
     }
     if (activeLoans.some((i) => i.book === ctx.body.bookId)) {
-      throw new ApiError(409, 'Ye book pehle se aapke paas issued hai.');
+      throw new ApiError(409, 'This book is already issued to you.');
     }
     if (activeLoans.some((i) => calculateFine(i.dueDate) > 0)) {
-      throw new ApiError(409, 'Overdue book pending hai. Pehle wo return karein, phir nai book milegi.');
+      throw new ApiError(409, 'You have an overdue book. Please return it before borrowing another.');
     }
 
     const book = db.books.find((b) => b._id === ctx.body.bookId);
     if (!book) throw notFound('Book');
-    if (book.availableCopies <= 0) throw new ApiError(409, 'Is book ki koi copy available nahi hai.');
+    if (book.availableCopies <= 0) throw new ApiError(409, 'No copies of this book are available.');
 
     book.availableCopies -= 1;
 
@@ -506,31 +506,31 @@ const routes = [
   ['PUT', /^\/issues\/([a-f0-9]+)\/renew$/, (ctx) => {
     const user = ctx.auth();
     const issue = db.issues.find((i) => i._id === ctx.params[0]);
-    if (!issue) throw new ApiError(404, 'Issue record nahi mila.');
+    if (!issue) throw new ApiError(404, 'Issue record not found.');
 
     if (user.role !== 'admin' && issue.student !== user._id) {
-      throw new ApiError(403, 'Ye record aapka nahi hai.');
+      throw new ApiError(403, 'This record does not belong to you.');
     }
-    if (issue.status === 'returned') throw new ApiError(409, 'Return ho chuki book renew nahi hoti.');
+    if (issue.status === 'returned') throw new ApiError(409, 'A returned book cannot be renewed.');
     if (issue.renewCount >= RULES.maxRenewals) {
-      throw new ApiError(409, `Renew limit poori ho gayi (max ${RULES.maxRenewals} baar).`);
+      throw new ApiError(409, `Renewal limit reached (max ${RULES.maxRenewals}).`);
     }
     if (calculateFine(issue.dueDate) > 0) {
-      throw new ApiError(409, 'Overdue book renew nahi ho sakti - pehle return karein.');
+      throw new ApiError(409, 'An overdue book cannot be renewed - please return it first.');
     }
 
     issue.dueDate = addDays(issue.dueDate, RULES.loanPeriodDays);
     issue.renewCount += 1;
     save();
 
-    return [200, { issue: shapeIssue(issue), message: 'Due date barha di gayi.' }];
+    return [200, { issue: shapeIssue(issue), message: 'Due date extended.' }];
   }],
 
   ['PUT', /^\/issues\/([a-f0-9]+)\/return$/, (ctx) => {
     requireAdmin(ctx.auth());
     const issue = db.issues.find((i) => i._id === ctx.params[0]);
-    if (!issue) throw new ApiError(404, 'Issue record nahi mila.');
-    if (issue.status === 'returned') throw new ApiError(409, 'Ye book pehle hi return ho chuki hai.');
+    if (!issue) throw new ApiError(404, 'Issue record not found.');
+    if (issue.status === 'returned') throw new ApiError(409, 'This book has already been returned.');
 
     issue.returnDate = new Date().toISOString();
     issue.status = 'returned';
@@ -543,20 +543,20 @@ const routes = [
 
     return [200, {
       issue: shapeIssue(issue),
-      message: issue.fine > 0 ? `Book return ho gayi. Fine: Rs ${issue.fine}` : 'Book return ho gayi.',
+      message: issue.fine > 0 ? `Book returned. Fine: Rs ${issue.fine}` : 'Book returned.',
     }];
   }],
 
   ['PUT', /^\/issues\/([a-f0-9]+)\/pay-fine$/, (ctx) => {
     requireAdmin(ctx.auth());
     const issue = db.issues.find((i) => i._id === ctx.params[0]);
-    if (!issue) throw new ApiError(404, 'Issue record nahi mila.');
+    if (!issue) throw new ApiError(404, 'Issue record not found.');
 
     if (issue.status === 'issued') issue.fine = calculateFine(issue.dueDate);
     issue.finePaid = true;
     save();
 
-    return [200, { issue: shapeIssue(issue), message: 'Fine paid mark ho gaya.' }];
+    return [200, { issue: shapeIssue(issue), message: 'Fine marked as paid.' }];
   }],
 
   /* ---------- users ---------- */
@@ -600,14 +600,14 @@ const routes = [
     const me = requireAdmin(ctx.auth());
     const user = db.users.find((u) => u._id === ctx.params[0]);
     if (!user) throw notFound('User');
-    if (user._id === me._id) throw new ApiError(400, 'Apna hi account block nahi kar sakte.');
+    if (user._id === me._id) throw new ApiError(400, 'You cannot block your own account.');
 
     user.isActive = !user.isActive;
     save();
 
     return [200, {
       user: publicUser(user),
-      message: user.isActive ? 'Account activate ho gaya.' : 'Account block ho gaya.',
+      message: user.isActive ? 'Account activated.' : 'Account blocked.',
     }];
   }],
 
@@ -615,14 +615,14 @@ const routes = [
     const me = requireAdmin(ctx.auth());
     const index = db.users.findIndex((u) => u._id === ctx.params[0]);
     if (index === -1) throw notFound('User');
-    if (ctx.params[0] === me._id) throw new ApiError(400, 'Apna hi account delete nahi kar sakte.');
+    if (ctx.params[0] === me._id) throw new ApiError(400, 'You cannot delete your own account.');
 
     const active = db.issues.some((i) => i.student === ctx.params[0] && i.status === 'issued');
-    if (active) throw new ApiError(409, 'Is student ke paas books issued hain - pehle return karwayein.');
+    if (active) throw new ApiError(409, 'This student still has issued books - process the returns first.');
 
     db.users.splice(index, 1);
     save();
-    return [200, { message: 'User delete ho gaya.' }];
+    return [200, { message: 'User deleted.' }];
   }],
 
   /* ---------- reports ---------- */
@@ -731,8 +731,8 @@ const routes = [
 /* ------------------------------------------------------------------ adapter */
 
 /**
- * Axios adapter - HTTP request ko network par bhejne ke bajaye upar wale
- * routes se chala deta hai. Response ka shape bilkul axios jaisa hi hota hai.
+ * An axios adapter: instead of putting the request on the network it runs it
+ * through the routes above, returning the same response shape axios would.
  */
 export function demoAdapter(config) {
   load();
@@ -762,9 +762,9 @@ export function demoAdapter(config) {
 
     const done = (status, data) => {
       const response = { data, status, statusText: '', headers: {}, config, request: {} };
-      // Asli axios ki tarah 4xx/5xx par reject karte hain.
+      // Reject on 4xx/5xx, the same way a real axios call does.
       if (status >= 400) {
-        const err = new Error(data.message || 'Request fail ho gayi.');
+        const err = new Error(data.message || 'Request failed.');
         err.response = response;
         err.config = config;
         err.isAxiosError = true;
@@ -774,7 +774,7 @@ export function demoAdapter(config) {
       }
     };
 
-    // Thora sa delay taake loading states asli lagen.
+    // A small delay so loading states behave like a real network call.
     setTimeout(() => {
       for (const [routeMethod, pattern, handler] of routes) {
         if (routeMethod !== method) continue;
@@ -788,12 +788,12 @@ export function demoAdapter(config) {
           done(status, data);
         } catch (err) {
           if (err instanceof ApiError) done(err.status, { message: err.message });
-          else done(500, { message: err.message || 'Demo backend mein masla aa gaya.' });
+          else done(500, { message: err.message || 'The demo backend hit an unexpected error.' });
         }
         return;
       }
 
-      done(404, { message: `Route nahi mila: ${method} ${path}` });
+      done(404, { message: `Route not found: ${method} ${path}` });
     }, 120);
   });
 }

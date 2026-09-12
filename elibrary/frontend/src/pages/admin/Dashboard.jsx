@@ -31,7 +31,7 @@ export default function Dashboard() {
     <div className="space-y-6">
       <header>
         <h1 className="text-2xl font-bold text-slate-900">Admin Dashboard</h1>
-        <p className="mt-1 text-sm text-slate-600">Library ki mojooda soorat-e-haal ek nazar mein.</p>
+        <p className="mt-1 text-sm text-slate-600">The current state of the library at a glance.</p>
       </header>
 
       <Alert onClose={() => setError('')}>{error}</Alert>
@@ -45,7 +45,7 @@ export default function Dashboard() {
               hint={`${stats.totalCopies} copies`}
             />
             <StatCard
-              label="Issued abhi"
+              label="On loan"
               value={stats.activeLoans}
               tone="amber"
               hint={`${stats.availableCopies} copies available`}
@@ -54,7 +54,7 @@ export default function Dashboard() {
               label="Overdue"
               value={stats.overdueCount}
               tone="red"
-              hint={stats.overdueCount > 0 ? 'Follow-up karein' : 'Sab clear'}
+              hint={stats.overdueCount > 0 ? 'Needs follow-up' : 'All clear'}
             />
             <StatCard
               label="Registered students"
@@ -75,14 +75,14 @@ export default function Dashboard() {
       <div className="grid gap-6 lg:grid-cols-2">
         <section className="card p-6">
           <div className="mb-4 flex items-center justify-between">
-            <h2 className="font-semibold text-slate-900">Sab se zyada issue hone wali books</h2>
+            <h2 className="font-semibold text-slate-900">Most borrowed books</h2>
             <Link to="/admin/reports" className="text-sm text-brand-600 hover:underline">
               Reports
             </Link>
           </div>
 
           {popular.length === 0 ? (
-            <p className="py-6 text-center text-sm text-slate-500">Abhi koi record nahi hai.</p>
+            <p className="py-6 text-center text-sm text-slate-500">No records yet.</p>
           ) : (
             <ol className="space-y-3">
               {popular.map((book, index) => (
@@ -107,12 +107,12 @@ export default function Dashboard() {
           <div className="mb-4 flex items-center justify-between">
             <h2 className="font-semibold text-slate-900">Overdue books</h2>
             <Link to="/admin/issues" className="text-sm text-brand-600 hover:underline">
-              Sab dekhein
+              View all
             </Link>
           </div>
 
           {overdue.length === 0 ? (
-            <p className="py-6 text-center text-sm text-slate-500">Koi book overdue nahi hai. 🎉</p>
+            <p className="py-6 text-center text-sm text-slate-500">No books are overdue. 🎉</p>
           ) : (
             <ul className="space-y-3">
               {overdue.map((issue) => (

@@ -9,21 +9,21 @@ import {
 const router = Router();
 
 const bookRules = [
-  body('title').trim().notEmpty().withMessage('Book ka title likhein.'),
-  body('author').trim().notEmpty().withMessage('Author ka naam likhein.'),
-  body('isbn').trim().notEmpty().withMessage('ISBN likhein.'),
-  body('category').trim().notEmpty().withMessage('Category select karein.'),
-  body('totalCopies').isInt({ min: 0 }).withMessage('Copies ki tadaad 0 ya us se zyada ho.'),
+  body('title').trim().notEmpty().withMessage('Book title is required.'),
+  body('author').trim().notEmpty().withMessage('Author name is required.'),
+  body('isbn').trim().notEmpty().withMessage('ISBN is required.'),
+  body('category').trim().notEmpty().withMessage('Category is required.'),
+  body('totalCopies').isInt({ min: 0 }).withMessage('Number of copies must be 0 or more.'),
   body('publishYear').optional({ values: 'falsy' }).isInt({ min: 1450, max: 2100 })
-    .withMessage('Publish year sahi likhein.'),
+    .withMessage('Enter a valid publish year.'),
 ];
 
-// Catalog sab logged-in users dekh sakte hain
+// Any signed-in user can browse the catalog
 router.get('/', protect, listBooks);
 router.get('/categories', protect, listCategories);
 router.get('/:id', protect, getBook);
 
-// Add / edit / delete sirf admin
+// Only admins can add, edit or delete
 router.post('/', protect, adminOnly, bookRules, validate, createBook);
 router.put('/:id', protect, adminOnly, updateBook);
 router.delete('/:id', protect, adminOnly, deleteBook);

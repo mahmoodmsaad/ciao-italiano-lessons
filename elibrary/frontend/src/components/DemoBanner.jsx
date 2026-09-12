@@ -2,8 +2,8 @@ import { DEMO } from '../api/client.js';
 import { resetDemoData } from '../api/demoBackend.js';
 
 /**
- * Demo build mein sab se upar ek patti - taake koi ye na samjhe ke ye asli
- * library ka data hai. Normal build mein ye kuch render nahi karta.
+ * A strip at the top of demo builds so nobody mistakes the sample data for a
+ * real library. Renders nothing in a normal build.
  */
 export default function DemoBanner() {
   if (!DEMO) return null;
@@ -21,10 +21,10 @@ export default function DemoBanner() {
           Demo
         </span>
         <span className="flex-1">
-          Ye live demo hai - data sirf aapke browser mein save hota hai, kisi server par nahi.
+          This is a live demo - your data is saved in this browser only, never on a server.
         </span>
         <button type="button" onClick={reset} className="font-medium underline hover:no-underline">
-          Reset karein
+          Reset data
         </button>
       </div>
     </div>

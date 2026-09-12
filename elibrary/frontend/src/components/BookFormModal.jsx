@@ -8,7 +8,7 @@ const EMPTY = {
   coverUrl: '', description: '',
 };
 
-/** Book add / edit karne ka form. book prop de dein to edit mode ho jata hai. */
+/** Form for adding or editing a book. Passing a book prop switches it to edit mode. */
 export default function BookFormModal({ open, book, onClose, onSaved }) {
   const [form, setForm] = useState(EMPTY);
   const [error, setError] = useState('');
@@ -46,7 +46,7 @@ export default function BookFormModal({ open, book, onClose, onSaved }) {
   };
 
   return (
-    <Modal open={open} title={book ? 'Book edit karein' : 'Nai book add karein'} onClose={onClose} width="max-w-2xl">
+    <Modal open={open} title={book ? 'Edit book' : 'Add a new book'} onClose={onClose} width="max-w-2xl">
       <form onSubmit={submit} className="space-y-4">
         <Alert onClose={() => setError('')}>{error}</Alert>
 
@@ -73,7 +73,7 @@ export default function BookFormModal({ open, book, onClose, onSaved }) {
               className="input"
               value={form.category}
               onChange={set('category')}
-              placeholder="misal: Computer Science"
+              placeholder="e.g. Computer Science"
               required
             />
           </div>
@@ -121,7 +121,7 @@ export default function BookFormModal({ open, book, onClose, onSaved }) {
               className="input"
               value={form.shelfLocation}
               onChange={set('shelfLocation')}
-              placeholder="misal: CS-A-01"
+              placeholder="e.g. CS-A-01"
             />
           </div>
 
@@ -148,7 +148,7 @@ export default function BookFormModal({ open, book, onClose, onSaved }) {
           </button>
           <button type="submit" className="btn-primary" disabled={saving}>
             {saving && <Spinner className="h-4 w-4 text-white" />}
-            {book ? 'Update karein' : 'Book add karein'}
+            {book ? 'Save changes' : 'Add book'}
           </button>
         </div>
       </form>

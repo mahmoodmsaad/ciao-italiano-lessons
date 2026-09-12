@@ -7,7 +7,7 @@ import { AuthProvider } from './context/AuthContext.jsx';
 import { DEMO } from './api/client.js';
 import './index.css';
 
-// Demo build kisi bhi folder/URL par host ho sakti hai, is liye hash routing.
+// A demo build can be hosted at any folder or URL, so it uses hash routing.
 const Router = DEMO ? HashRouter : BrowserRouter;
 
 ReactDOM.createRoot(document.getElementById('root')).render(

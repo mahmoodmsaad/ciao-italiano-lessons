@@ -1,4 +1,4 @@
-/** Demo data - seed script aur in-memory demo mode dono isi ko use karte hain. */
+/** Demo data, shared by the seed script and the in-memory demo mode. */
 
 export const sampleUsers = [
   {
@@ -51,7 +51,7 @@ export const sampleBooks = [
     shelfLocation: 'CS-A-01',
     totalCopies: 4,
     description:
-      'Algorithms ki comprehensive kitaab - sorting, graphs, dynamic programming aur complexity analysis.',
+      'A comprehensive reference on sorting, graphs, dynamic programming and complexity analysis.',
   },
   {
     title: 'Clean Code: A Handbook of Agile Software Craftsmanship',
@@ -63,7 +63,7 @@ export const sampleBooks = [
     edition: '1st',
     shelfLocation: 'SE-B-04',
     totalCopies: 3,
-    description: 'Saaf, readable aur maintainable code likhne ke usool aur practical examples.',
+    description: 'Principles and worked examples for writing clean, readable, maintainable code.',
   },
   {
     title: 'Database System Concepts',
@@ -75,7 +75,7 @@ export const sampleBooks = [
     edition: '7th',
     shelfLocation: 'DB-C-02',
     totalCopies: 5,
-    description: 'Relational model, SQL, normalization, transactions aur query processing.',
+    description: 'Relational model, SQL, normalization, transactions and query processing.',
   },
   {
     title: 'Computer Networks',
@@ -87,7 +87,7 @@ export const sampleBooks = [
     edition: '6th',
     shelfLocation: 'NW-D-03',
     totalCopies: 3,
-    description: 'Network layers, protocols, routing aur network security ka detailed taaruf.',
+    description: 'A detailed introduction to network layers, protocols, routing and network security.',
   },
   {
     title: 'Operating System Concepts',
@@ -99,7 +99,7 @@ export const sampleBooks = [
     edition: '10th',
     shelfLocation: 'OS-A-07',
     totalCopies: 4,
-    description: 'Processes, threads, scheduling, memory management aur file systems.',
+    description: 'Processes, threads, scheduling, memory management and file systems.',
   },
   {
     title: 'Artificial Intelligence: A Modern Approach',
@@ -111,7 +111,7 @@ export const sampleBooks = [
     edition: '4th',
     shelfLocation: 'AI-E-01',
     totalCopies: 2,
-    description: 'Search, knowledge representation, machine learning aur intelligent agents.',
+    description: 'Search, knowledge representation, machine learning and intelligent agents.',
   },
   {
     title: 'Eloquent JavaScript',
@@ -123,7 +123,7 @@ export const sampleBooks = [
     edition: '3rd',
     shelfLocation: 'WD-F-02',
     totalCopies: 3,
-    description: 'JavaScript language, DOM, asynchronous programming aur Node.js basics.',
+    description: 'JavaScript language, DOM, asynchronous programming and Node.js basics.',
   },
   {
     title: 'Software Engineering',
@@ -135,7 +135,7 @@ export const sampleBooks = [
     edition: '10th',
     shelfLocation: 'SE-B-01',
     totalCopies: 4,
-    description: 'Requirements engineering, design, testing aur project management.',
+    description: 'Requirements engineering, design, testing and project management.',
   },
   {
     title: 'Discrete Mathematics and Its Applications',
@@ -147,7 +147,7 @@ export const sampleBooks = [
     edition: '8th',
     shelfLocation: 'MT-G-05',
     totalCopies: 5,
-    description: 'Logic, sets, relations, graph theory aur combinatorics.',
+    description: 'Logic, sets, relations, graph theory and combinatorics.',
   },
   {
     title: 'The Pragmatic Programmer',
@@ -159,7 +159,7 @@ export const sampleBooks = [
     edition: '2nd',
     shelfLocation: 'SE-B-09',
     totalCopies: 2,
-    description: 'Practical tips aur habits jo developer ko behtar banate hain.',
+    description: 'Practical tips and habits that make you a better developer.',
   },
   {
     title: 'Head First Design Patterns',
@@ -171,7 +171,7 @@ export const sampleBooks = [
     edition: '2nd',
     shelfLocation: 'SE-B-11',
     totalCopies: 3,
-    description: 'Design patterns ko asaan visual tareeqe se samjhaya gaya hai.',
+    description: 'Design patterns explained in an approachable, highly visual style.',
   },
   {
     title: 'Cryptography and Network Security',
@@ -183,6 +183,6 @@ export const sampleBooks = [
     edition: '7th',
     shelfLocation: 'IS-H-02',
     totalCopies: 2,
-    description: 'Encryption algorithms, key management aur network security protocols.',
+    description: 'Encryption algorithms, key management and network security protocols.',
   },
 ];

@@ -15,7 +15,7 @@ export const config = {
   jwtSecret: process.env.JWT_SECRET || 'dev_only_insecure_secret',
   jwtExpiresIn: process.env.JWT_EXPIRES_IN || '7d',
 
-  // Library rules - inhe .env se badla ja sakta hai
+  // Library rules - override these in .env
   loanPeriodDays: num(process.env.LOAN_PERIOD_DAYS, 14),
   finePerDay: num(process.env.FINE_PER_DAY, 5),
   maxBooksPerStudent: num(process.env.MAX_BOOKS_PER_STUDENT, 3),
@@ -23,5 +23,5 @@ export const config = {
 };
 
 if (config.jwtSecret === 'dev_only_insecure_secret') {
-  console.warn('[warn] JWT_SECRET .env mein set nahi hai - development default use ho raha hai.');
+  console.warn('[warn] JWT_SECRET is not set in .env - falling back to an insecure development default.');
 }

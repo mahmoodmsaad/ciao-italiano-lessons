@@ -1,6 +1,6 @@
 /**
- * Demo data database mein daalne ke liye:  npm run seed
- * Warning: ye purana saara data delete kar deta hai.
+ * Loads demo data into the database:  npm run seed
+ * Warning: this deletes all existing data first.
  */
 import { connectDB, disconnectDB, isMemoryDB } from '../config/db.js';
 import { seedDatabase } from './seedData.js';
@@ -10,9 +10,9 @@ async function run() {
     await connectDB();
 
     if (isMemoryDB()) {
-      console.error('\n[error] MONGO_URI set nahi hai.');
-      console.error('[error] In-memory database seed karne ka koi faida nahi - process band hote hi data chala jayega.');
-      console.error('[error] .env mein MONGO_URI set karein, phir dobara try karein.\n');
+      console.error('\n[error] MONGO_URI is not set.');
+      console.error('[error] Seeding an in-memory database has no effect - the data disappears when the process exits.');
+      console.error('[error] Set MONGO_URI in .env and try again.\n');
       await disconnectDB();
       process.exit(1);
     }
@@ -27,7 +27,7 @@ async function run() {
     await disconnectDB();
     process.exit(0);
   } catch (err) {
-    console.error('[seed] Fail ho gaya:', err.message);
+    console.error('[seed] Failed:', err.message);
     process.exit(1);
   }
 }

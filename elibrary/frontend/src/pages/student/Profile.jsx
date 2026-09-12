@@ -23,7 +23,7 @@ export default function Profile() {
     try {
       const { data } = await api.put('/auth/profile', profile);
       setUser(data.user);
-      setFeedback({ type: 'success', text: 'Profile update ho gayi.' });
+      setFeedback({ type: 'success', text: 'Profile updated.' });
     } catch (err) {
       setFeedback({ type: 'error', text: errorMessage(err) });
     } finally {
@@ -36,7 +36,7 @@ export default function Profile() {
     setFeedback({ type: '', text: '' });
 
     if (passwords.newPassword !== passwords.confirm) {
-      setFeedback({ type: 'error', text: 'Naye passwords same nahi hain.' });
+      setFeedback({ type: 'error', text: 'The new passwords do not match.' });
       return;
     }
 
@@ -47,7 +47,7 @@ export default function Profile() {
         newPassword: passwords.newPassword,
       });
       setPasswords({ currentPassword: '', newPassword: '', confirm: '' });
-      setFeedback({ type: 'success', text: 'Password badal gaya.' });
+      setFeedback({ type: 'success', text: 'Password changed.' });
     } catch (err) {
       setFeedback({ type: 'error', text: errorMessage(err) });
     } finally {
@@ -59,7 +59,7 @@ export default function Profile() {
     <div className="mx-auto max-w-2xl space-y-6">
       <header>
         <h1 className="text-2xl font-bold text-slate-900">Profile</h1>
-        <p className="mt-1 text-sm text-slate-600">Apni maloomat aur password yahan se badlein.</p>
+        <p className="mt-1 text-sm text-slate-600">Update your details and password here.</p>
       </header>
 
       {feedback.text && (
@@ -69,11 +69,11 @@ export default function Profile() {
       )}
 
       <form onSubmit={saveProfile} className="card space-y-4 p-6">
-        <h2 className="font-semibold text-slate-900">Basic maloomat</h2>
+        <h2 className="font-semibold text-slate-900">Your details</h2>
 
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="sm:col-span-2">
-            <label className="label" htmlFor="p-name">Naam</label>
+            <label className="label" htmlFor="p-name">Name</label>
             <input
               id="p-name"
               className="input"
@@ -84,7 +84,7 @@ export default function Profile() {
           </div>
 
           <div>
-            <label className="label" htmlFor="p-email">Email (badla nahi ja sakta)</label>
+            <label className="label" htmlFor="p-email">Email (cannot be changed)</label>
             <input id="p-email" className="input bg-slate-50" value={user?.email || ''} disabled />
           </div>
 
@@ -117,16 +117,16 @@ export default function Profile() {
         <div className="flex justify-end">
           <button type="submit" className="btn-primary" disabled={busy === 'profile'}>
             {busy === 'profile' && <Spinner className="h-4 w-4 text-white" />}
-            Save karein
+            Save changes
           </button>
         </div>
       </form>
 
       <form onSubmit={savePassword} className="card space-y-4 p-6">
-        <h2 className="font-semibold text-slate-900">Password badlein</h2>
+        <h2 className="font-semibold text-slate-900">Change password</h2>
 
         <div>
-          <label className="label" htmlFor="p-current">Purana password</label>
+          <label className="label" htmlFor="p-current">Current password</label>
           <input
             id="p-current"
             type="password"
@@ -139,7 +139,7 @@ export default function Profile() {
 
         <div className="grid gap-4 sm:grid-cols-2">
           <div>
-            <label className="label" htmlFor="p-new">Naya password</label>
+            <label className="label" htmlFor="p-new">New password</label>
             <input
               id="p-new"
               type="password"
@@ -152,7 +152,7 @@ export default function Profile() {
           </div>
 
           <div>
-            <label className="label" htmlFor="p-confirm">Naya password dobara</label>
+            <label className="label" htmlFor="p-confirm">Confirm new password</label>
             <input
               id="p-confirm"
               type="password"
@@ -168,7 +168,7 @@ export default function Profile() {
         <div className="flex justify-end">
           <button type="submit" className="btn-primary" disabled={busy === 'password'}>
             {busy === 'password' && <Spinner className="h-4 w-4 text-white" />}
-            Password update karein
+            Update password
           </button>
         </div>
       </form>

@@ -5,10 +5,10 @@ import {
 } from '../../components/ui.jsx';
 
 const FILTERS = [
-  { key: 'issued', label: 'Abhi issued', params: { status: 'issued' } },
+  { key: 'issued', label: 'On loan', params: { status: 'issued' } },
   { key: 'overdue', label: 'Overdue', params: { overdue: 'true' } },
-  { key: 'returned', label: 'Wapas ho chuki', params: { status: 'returned' } },
-  { key: 'all', label: 'Sab records', params: {} },
+  { key: 'returned', label: 'Returned', params: { status: 'returned' } },
+  { key: 'all', label: 'All records', params: {} },
 ];
 
 export default function IssueReturn() {
@@ -59,11 +59,11 @@ export default function IssueReturn() {
         <div>
           <h1 className="text-2xl font-bold text-slate-900">Issue / Return</h1>
           <p className="mt-1 text-sm text-slate-600">
-            Students ko books issue karein aur wapasi record karein.
+            Lend books to students and record their returns.
           </p>
         </div>
         <button type="button" className="btn-primary" onClick={() => setIssueOpen(true)}>
-          + Book issue karein
+          + Issue a book
         </button>
       </header>
 
@@ -88,7 +88,7 @@ export default function IssueReturn() {
       {loading ? (
         <PageLoader />
       ) : issues.length === 0 ? (
-        <EmptyState icon="🗂️" title="Koi record nahi mila" hint="Doosra filter try karein." />
+        <EmptyState icon="🗂️" title="No records found" hint="Try a different filter." />
       ) : (
         <div className="card overflow-x-auto">
           <table className="w-full min-w-[860px]">
@@ -120,7 +120,7 @@ export default function IssueReturn() {
                     {issue.status === 'returned' ? (
                       <Badge tone="slate">Returned {formatDate(issue.returnDate)}</Badge>
                     ) : issue.isOverdue ? (
-                      <Badge tone="red">{issue.daysOverdue} din late</Badge>
+                      <Badge tone="red">{issue.daysOverdue} days late</Badge>
                     ) : (
                       <Badge tone="green">Issued</Badge>
                     )}
@@ -154,7 +154,7 @@ export default function IssueReturn() {
                           disabled={busyId === issue._id}
                           onClick={() => act(issue._id, 'pay-fine')}
                         >
-                          Fine paid
+                          Mark fine paid
                         </button>
                       )}
                     </div>
@@ -178,7 +178,7 @@ export default function IssueReturn() {
   );
 }
 
-/** Admin kisi student ko book issue karta hai. */
+/** Lets an admin lend a book to a student. */
 function IssueBookModal({ open, onClose, onIssued }) {
   const [students, setStudents] = useState([]);
   const [books, setBooks] = useState([]);
@@ -210,7 +210,7 @@ function IssueBookModal({ open, onClose, onIssued }) {
     try {
       const { data } = await api.post('/issues', form);
       onIssued(
-        `"${data.issue.book.title}" ${data.issue.student.name} ko issue ho gayi. Due: ${formatDate(data.issue.dueDate)}`
+        `"${data.issue.book.title}" issued to ${data.issue.student.name}. Due ${formatDate(data.issue.dueDate)}.`
       );
       onClose();
     } catch (err) {
@@ -221,7 +221,7 @@ function IssueBookModal({ open, onClose, onIssued }) {
   };
 
   return (
-    <Modal open={open} title="Book issue karein" onClose={onClose}>
+    <Modal open={open} title="Issue a book" onClose={onClose}>
       <form onSubmit={submit} className="space-y-4">
         <Alert onClose={() => setError('')}>{error}</Alert>
 
@@ -234,7 +234,7 @@ function IssueBookModal({ open, onClose, onIssued }) {
             onChange={(e) => setForm((f) => ({ ...f, studentId: e.target.value }))}
             required
           >
-            <option value="">Student select karein</option>
+            <option value="">Select a student</option>
             {students.map((s) => (
               <option key={s._id} value={s._id}>
                 {s.name} - {s.rollNo} ({s.activeLoans} books)
@@ -252,7 +252,7 @@ function IssueBookModal({ open, onClose, onIssued }) {
             onChange={(e) => setForm((f) => ({ ...f, bookId: e.target.value }))}
             required
           >
-            <option value="">Available book select karein</option>
+            <option value="">Select an available book</option>
             {books.map((b) => (
               <option key={b._id} value={b._id}>
                 {b.title} - {b.author} ({b.availableCopies} available)
@@ -260,7 +260,7 @@ function IssueBookModal({ open, onClose, onIssued }) {
             ))}
           </select>
           {books.length === 0 && (
-            <p className="mt-1.5 text-xs text-amber-700">Abhi koi book available nahi hai.</p>
+            <p className="mt-1.5 text-xs text-amber-700">No books are available right now.</p>
           )}
         </div>
 
@@ -270,7 +270,7 @@ function IssueBookModal({ open, onClose, onIssued }) {
           </button>
           <button type="submit" className="btn-primary" disabled={busy}>
             {busy && <Spinner className="h-4 w-4 text-white" />}
-            Issue karein
+            Issue book
           </button>
         </div>
       </form>

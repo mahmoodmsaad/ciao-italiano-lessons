@@ -7,10 +7,10 @@ export const register = asyncHandler(async (req, res) => {
   const { name, email, password, rollNo, department, phone } = req.body;
 
   if (await User.findOne({ email: email.toLowerCase() })) {
-    return res.status(409).json({ message: 'Ye email pehle se register hai.' });
+    return res.status(409).json({ message: 'This email is already registered.' });
   }
 
-  // Role hamesha student - admin sirf seed script ya kisi admin se banta hai.
+  // The role is always student - admins come from the seed script only.
   const user = await User.create({
     name,
     email,
@@ -30,10 +30,10 @@ export const login = asyncHandler(async (req, res) => {
 
   const user = await User.findOne({ email: email.toLowerCase() }).select('+password');
   if (!user || !(await user.matchPassword(password))) {
-    return res.status(401).json({ message: 'Email ya password ghalat hai.' });
+    return res.status(401).json({ message: 'Incorrect email or password.' });
   }
   if (!user.isActive) {
-    return res.status(403).json({ message: 'Aapka account block hai. Admin se rabta karein.' });
+    return res.status(403).json({ message: 'Your account is blocked. Please contact the library admin.' });
   }
 
   res.json({ token: signToken(user), user: publicUser(user) });
@@ -63,11 +63,11 @@ export const changePassword = asyncHandler(async (req, res) => {
 
   const user = await User.findById(req.user._id).select('+password');
   if (!(await user.matchPassword(currentPassword))) {
-    return res.status(401).json({ message: 'Purana password ghalat hai.' });
+    return res.status(401).json({ message: 'Current password is incorrect.' });
   }
 
   user.password = newPassword;
   await user.save();
 
-  res.json({ message: 'Password update ho gaya.' });
+  res.json({ message: 'Password updated.' });
 });

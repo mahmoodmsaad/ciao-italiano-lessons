@@ -1,4 +1,4 @@
-/** Chhote reusable UI components - poore app mein use hote hain. */
+/** Small reusable UI pieces shared across the app. */
 import { useEffect } from 'react';
 
 export function Spinner({ className = 'h-6 w-6' }) {
@@ -14,7 +14,7 @@ export function Spinner({ className = 'h-6 w-6' }) {
   );
 }
 
-export function PageLoader({ label = 'Load ho raha hai...' }) {
+export function PageLoader({ label = 'Loading...' }) {
   return (
     <div className="flex flex-col items-center justify-center gap-3 py-20 text-slate-500">
       <Spinner className="h-8 w-8" />
@@ -87,7 +87,7 @@ export function StatCard({ label, value, hint, tone = 'brand' }) {
 }
 
 export function Modal({ open, title, onClose, children, width = 'max-w-lg' }) {
-  // Modal khula ho to Escape se band ho aur background scroll na kare.
+  // While the modal is open, Escape closes it and the page behind it stops scrolling.
   useEffect(() => {
     if (!open) return undefined;
 
@@ -111,7 +111,7 @@ export function Modal({ open, title, onClose, children, width = 'max-w-lg' }) {
           <button
             type="button"
             onClick={onClose}
-            aria-label="Band karein"
+            aria-label="Close"
             className="text-2xl leading-none text-slate-400 hover:text-slate-700"
           >
             &times;
@@ -123,7 +123,7 @@ export function Modal({ open, title, onClose, children, width = 'max-w-lg' }) {
   );
 }
 
-export function ConfirmDialog({ open, title, message, confirmText = 'Haan, karein', onConfirm, onClose, busy }) {
+export function ConfirmDialog({ open, title, message, confirmText = 'Yes, continue', onConfirm, onClose, busy }) {
   return (
     <Modal open={open} title={title} onClose={onClose} width="max-w-md">
       <p className="text-sm text-slate-600">{message}</p>
@@ -151,7 +151,7 @@ export function Pagination({ page, totalPages, onChange }) {
         disabled={page <= 1}
         onClick={() => onChange(page - 1)}
       >
-        Pichla
+        Previous
       </button>
       <span className="text-sm text-slate-600">
         Page {page} / {totalPages}
@@ -162,13 +162,13 @@ export function Pagination({ page, totalPages, onChange }) {
         disabled={page >= totalPages}
         onClick={() => onChange(page + 1)}
       >
-        Agla
+        Next
       </button>
     </div>
   );
 }
 
-/** Date ko "12 Sep 2026" format mein dikhata hai. */
+/** Formats a date as "12 Sep 2026". */
 export const formatDate = (value) =>
   value
     ? new Date(value).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })

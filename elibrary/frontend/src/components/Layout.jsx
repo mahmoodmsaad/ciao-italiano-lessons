@@ -22,7 +22,7 @@ export default function Layout() {
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
 
-  // Logout ke baad seedha login par - purana "kahan se aaye the" record saaf ho jaye.
+  // After logout go straight to login, clearing the remembered "came from" route.
   const handleLogout = () => {
     logout();
     navigate('/login', { replace: true, state: null });

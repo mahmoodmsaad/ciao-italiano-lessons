@@ -12,42 +12,42 @@ const POPULATE = [
 ];
 
 // POST /api/issues  { bookId, studentId? }
-// Student khud borrow kare ya admin kisi student ko issue kare.
+// A student borrows for themselves, or an admin lends to a student.
 export const issueBook = asyncHandler(async (req, res) => {
   const { bookId } = req.body;
   const isAdmin = req.user.role === 'admin';
 
   const studentId = isAdmin ? req.body.studentId : req.user._id;
-  if (!studentId) return res.status(400).json({ message: 'Student select karein.' });
+  if (!studentId) return res.status(400).json({ message: 'Please select a student.' });
   if (!mongoose.isValidObjectId(studentId)) {
-    return res.status(400).json({ message: 'Ghalat student ID.' });
+    return res.status(400).json({ message: 'Invalid student ID.' });
   }
 
   const student = await User.findById(studentId);
   if (!student || student.role !== 'student') {
-    return res.status(404).json({ message: 'Student nahi mila.' });
+    return res.status(404).json({ message: 'Student not found.' });
   }
   if (!student.isActive) {
-    return res.status(403).json({ message: 'Ye student account block hai.' });
+    return res.status(403).json({ message: 'This student account is blocked.' });
   }
 
   const activeLoans = await Issue.find({ student: studentId, status: 'issued' });
 
   if (activeLoans.length >= config.maxBooksPerStudent) {
     return res.status(409).json({
-      message: `Limit poori ho gayi - ek waqt mein sirf ${config.maxBooksPerStudent} books issue ho sakti hain.`,
+      message: `Borrowing limit reached - a student may hold only ${config.maxBooksPerStudent} books at a time.`,
     });
   }
   if (activeLoans.some((loan) => String(loan.book) === String(bookId))) {
-    return res.status(409).json({ message: 'Ye book pehle se aapke paas issued hai.' });
+    return res.status(409).json({ message: 'This book is already issued to you.' });
   }
   if (activeLoans.some((loan) => calculateFine(loan.dueDate) > 0)) {
     return res.status(409).json({
-      message: 'Overdue book pending hai. Pehle wo return karein, phir nai book milegi.',
+      message: 'You have an overdue book. Please return it before borrowing another.',
     });
   }
 
-  // Atomic update - do requests ek saath aayen to bhi copies minus nahi hongi.
+  // Atomic update, so two simultaneous requests can never push copies below zero.
   const book = await Book.findOneAndUpdate(
     { _id: bookId, availableCopies: { $gt: 0 } },
     { $inc: { availableCopies: -1 } },
@@ -56,7 +56,7 @@ export const issueBook = asyncHandler(async (req, res) => {
   if (!book) {
     const exists = await Book.exists({ _id: bookId });
     return res.status(exists ? 409 : 404).json({
-      message: exists ? 'Is book ki koi copy available nahi hai.' : 'Book nahi mili.',
+      message: exists ? 'No copies of this book are available.' : 'Book not found.',
     });
   }
 
@@ -71,7 +71,7 @@ export const issueBook = asyncHandler(async (req, res) => {
 
     res.status(201).json({ issue: await issue.populate(POPULATE) });
   } catch (err) {
-    // Record na bane to copy wapas available kar dein.
+    // If the record could not be created, put the copy back.
     await Book.updateOne({ _id: book._id }, { $inc: { availableCopies: 1 } });
     throw err;
   }
@@ -80,9 +80,9 @@ export const issueBook = asyncHandler(async (req, res) => {
 // PUT /api/issues/:id/return  (admin)
 export const returnBook = asyncHandler(async (req, res) => {
   const issue = await Issue.findById(req.params.id);
-  if (!issue) return res.status(404).json({ message: 'Issue record nahi mila.' });
+  if (!issue) return res.status(404).json({ message: 'Issue record not found.' });
   if (issue.status === 'returned') {
-    return res.status(409).json({ message: 'Ye book pehle hi return ho chuki hai.' });
+    return res.status(409).json({ message: 'This book has already been returned.' });
   }
 
   issue.returnDate = new Date();
@@ -95,51 +95,51 @@ export const returnBook = asyncHandler(async (req, res) => {
 
   res.json({
     issue: await issue.populate(POPULATE),
-    message: issue.fine > 0 ? `Book return ho gayi. Fine: Rs ${issue.fine}` : 'Book return ho gayi.',
+    message: issue.fine > 0 ? `Book returned. Fine: Rs ${issue.fine}` : 'Book returned.',
   });
 });
 
-// PUT /api/issues/:id/renew - due date aage barhana
+// PUT /api/issues/:id/renew - extend the due date
 export const renewBook = asyncHandler(async (req, res) => {
   const issue = await Issue.findById(req.params.id);
-  if (!issue) return res.status(404).json({ message: 'Issue record nahi mila.' });
+  if (!issue) return res.status(404).json({ message: 'Issue record not found.' });
 
   const isOwner = String(issue.student) === String(req.user._id);
   if (req.user.role !== 'admin' && !isOwner) {
-    return res.status(403).json({ message: 'Ye record aapka nahi hai.' });
+    return res.status(403).json({ message: 'This record does not belong to you.' });
   }
   if (issue.status === 'returned') {
-    return res.status(409).json({ message: 'Return ho chuki book renew nahi hoti.' });
+    return res.status(409).json({ message: 'A returned book cannot be renewed.' });
   }
   if (issue.renewCount >= config.maxRenewals) {
     return res.status(409).json({
-      message: `Renew limit poori ho gayi (max ${config.maxRenewals} baar).`,
+      message: `Renewal limit reached (max ${config.maxRenewals}).`,
     });
   }
   if (calculateFine(issue.dueDate) > 0) {
-    return res.status(409).json({ message: 'Overdue book renew nahi ho sakti - pehle return karein.' });
+    return res.status(409).json({ message: 'An overdue book cannot be renewed - please return it first.' });
   }
 
   issue.dueDate = addDays(issue.dueDate, config.loanPeriodDays);
   issue.renewCount += 1;
   await issue.save();
 
-  res.json({ issue: await issue.populate(POPULATE), message: 'Due date barha di gayi.' });
+  res.json({ issue: await issue.populate(POPULATE), message: 'Due date extended.' });
 });
 
 // PUT /api/issues/:id/pay-fine  (admin)
 export const payFine = asyncHandler(async (req, res) => {
   const issue = await Issue.findById(req.params.id);
-  if (!issue) return res.status(404).json({ message: 'Issue record nahi mila.' });
+  if (!issue) return res.status(404).json({ message: 'Issue record not found.' });
 
   issue.fine = issue.status === 'issued' ? calculateFine(issue.dueDate) : issue.fine;
   issue.finePaid = true;
   await issue.save();
 
-  res.json({ issue: await issue.populate(POPULATE), message: 'Fine paid mark ho gaya.' });
+  res.json({ issue: await issue.populate(POPULATE), message: 'Fine marked as paid.' });
 });
 
-// GET /api/issues/my - student ke apne records
+// GET /api/issues/my - a student's own records
 export const myIssues = asyncHandler(async (req, res) => {
   const { status } = req.query;
   const filter = { student: req.user._id };

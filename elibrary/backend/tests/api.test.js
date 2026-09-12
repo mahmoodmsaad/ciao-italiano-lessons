@@ -1,6 +1,6 @@
 /**
- * Route wiring ke tests - ye database ke baghair chalte hain.
- * Sirf ye check karte hain ke routes mojood hain aur auth/validation kaam kar rahi hai.
+ * Route wiring tests. These run without a database and only check that the
+ * routes exist and that auth and validation are applied.
  */
 import test, { before, after } from 'node:test';
 import assert from 'node:assert/strict';
@@ -19,7 +19,7 @@ after(() => server.close());
 
 const get = (path, opts) => fetch(`${baseUrl}${path}`, opts);
 
-test('GET /api/health library rules ke saath 200 deta hai', async () => {
+test('GET /api/health returns 200 with the library rules', async () => {
   const res = await get('/api/health');
   assert.equal(res.status, 200);
 
@@ -29,24 +29,24 @@ test('GET /api/health library rules ke saath 200 deta hai', async () => {
   assert.equal(typeof body.rules.loanPeriodDays, 'number');
 });
 
-test('unknown route par 404 aata hai', async () => {
-  const res = await get('/api/koi-aisi-cheez-nahi');
+test('an unknown route returns 404', async () => {
+  const res = await get('/api/no-such-thing');
   assert.equal(res.status, 404);
 });
 
-test('protected routes bina token 401 dete hain', async () => {
+test('protected routes return 401 without a token', async () => {
   for (const path of ['/api/books', '/api/issues/my', '/api/users', '/api/reports/summary']) {
     const res = await get(path);
     assert.equal(res.status, 401, `${path} ko 401 dena chahiye tha`);
   }
 });
 
-test('ghalat token par 401 aata hai', async () => {
-  const res = await get('/api/books', { headers: { Authorization: 'Bearer bilkul-ghalat-token' } });
+test('an invalid token returns 401', async () => {
+  const res = await get('/api/books', { headers: { Authorization: 'Bearer definitely-not-a-valid-token' } });
   assert.equal(res.status, 401);
 });
 
-test('register khaali body par validation error deta hai', async () => {
+test('register returns a validation error for an empty body', async () => {
   const res = await get('/api/auth/register', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -59,7 +59,7 @@ test('register khaali body par validation error deta hai', async () => {
   assert.ok(body.errors.some((e) => e.field === 'email'));
 });
 
-test('register chhote password ko reject karta hai', async () => {
+test('register rejects a password that is too short', async () => {
   const res = await get('/api/auth/register', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -73,7 +73,7 @@ test('register chhote password ko reject karta hai', async () => {
   assert.ok(body.errors.some((e) => e.field === 'password'));
 });
 
-test('login bina password 400 deta hai', async () => {
+test('login without a password returns 400', async () => {
   const res = await get('/api/auth/login', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },

@@ -11,10 +11,10 @@ const router = Router();
 router.post(
   '/register',
   [
-    body('name').trim().notEmpty().withMessage('Naam likhna zaroori hai.'),
-    body('email').isEmail().withMessage('Sahi email likhein.').normalizeEmail(),
-    body('password').isLength({ min: 6 }).withMessage('Password kam se kam 6 characters ka ho.'),
-    body('rollNo').trim().notEmpty().withMessage('Roll number likhna zaroori hai.'),
+    body('name').trim().notEmpty().withMessage('Name is required.'),
+    body('email').isEmail().withMessage('Enter a valid email address.').normalizeEmail(),
+    body('password').isLength({ min: 6 }).withMessage('Password must be at least 6 characters.'),
+    body('rollNo').trim().notEmpty().withMessage('Roll number is required.'),
   ],
   validate,
   register
@@ -23,8 +23,8 @@ router.post(
 router.post(
   '/login',
   [
-    body('email').isEmail().withMessage('Sahi email likhein.').normalizeEmail(),
-    body('password').notEmpty().withMessage('Password likhein.'),
+    body('email').isEmail().withMessage('Enter a valid email address.').normalizeEmail(),
+    body('password').notEmpty().withMessage('Password is required.'),
   ],
   validate,
   login
@@ -36,8 +36,8 @@ router.put(
   '/password',
   protect,
   [
-    body('currentPassword').notEmpty().withMessage('Purana password likhein.'),
-    body('newPassword').isLength({ min: 6 }).withMessage('Naya password kam se kam 6 characters ka ho.'),
+    body('currentPassword').notEmpty().withMessage('Current password is required.'),
+    body('newPassword').isLength({ min: 6 }).withMessage('New password must be at least 6 characters.'),
   ],
   validate,
   changePassword

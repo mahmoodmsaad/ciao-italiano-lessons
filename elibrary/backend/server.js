@@ -7,7 +7,7 @@ async function start() {
   try {
     await connectDB();
 
-    // Demo mode: in-memory database khaali hota hai, isliye khud hi bhar dete hain.
+    // Demo mode: the in-memory database starts empty, so seed it here.
     if (isMemoryDB()) {
       await seedDatabase({ log: (msg) => console.log(`[seed] ${msg}`) });
       console.log('[seed] Demo login -> admin@university.edu.pk / admin123');
@@ -15,11 +15,11 @@ async function start() {
     }
 
     app.listen(config.port, () => {
-      console.log(`[server] E-Library API chal raha hai: http://localhost:${config.port}`);
+      console.log(`[server] E-Library API is running at http://localhost:${config.port}`);
       console.log(`[server] Health check: http://localhost:${config.port}/api/health`);
     });
   } catch (err) {
-    console.error('[server] Start nahi ho saka:', err.message);
+    console.error('[server] Failed to start:', err.message);
     process.exit(1);
   }
 }

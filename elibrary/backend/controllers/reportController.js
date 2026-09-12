@@ -33,7 +33,7 @@ export const summary = asyncHandler(async (req, res) => {
     ]),
   ]);
 
-  // Pending fine = abhi tak overdue books ka live fine + return ho chuki books ka unpaid fine
+  // Pending fine = live fine on overdue loans + unpaid fine on returned books
   const unpaidReturned = await Issue.aggregate([
     { $match: { status: 'returned', finePaid: false, fine: { $gt: 0 } } },
     { $group: { _id: null, total: { $sum: '$fine' } } },
@@ -58,7 +58,7 @@ export const summary = asyncHandler(async (req, res) => {
   });
 });
 
-// GET /api/reports/popular?limit=5  (admin) - sabse zyada issue hone wali books
+// GET /api/reports/popular?limit=5  (admin) - most borrowed books
 export const popularBooks = asyncHandler(async (req, res) => {
   const limit = Math.min(20, Math.max(1, Number(req.query.limit) || 5));
 
@@ -82,7 +82,7 @@ export const popularBooks = asyncHandler(async (req, res) => {
   res.json({ books: rows });
 });
 
-// GET /api/reports/monthly?months=6  (admin) - har mahine kitne issue / return
+// GET /api/reports/monthly?months=6  (admin) - issued and returned per month
 export const monthlyActivity = asyncHandler(async (req, res) => {
   const months = Math.min(12, Math.max(1, Number(req.query.months) || 6));
   const from = new Date();
@@ -116,7 +116,7 @@ export const monthlyActivity = asyncHandler(async (req, res) => {
   res.json({ series });
 });
 
-// GET /api/reports/categories  (admin) - category wise books
+// GET /api/reports/categories  (admin) - books per category
 export const categoryBreakdown = asyncHandler(async (req, res) => {
   const rows = await Book.aggregate([
     { $group: { _id: '$category', books: { $sum: 1 }, copies: { $sum: '$totalCopies' } } },
@@ -126,7 +126,7 @@ export const categoryBreakdown = asyncHandler(async (req, res) => {
   res.json({ categories: rows });
 });
 
-// GET /api/reports/overdue  (admin) - overdue list with fine
+// GET /api/reports/overdue  (admin) - overdue list with fines
 export const overdueReport = asyncHandler(async (req, res) => {
   const startOfToday = new Date(new Date().setHours(0, 0, 0, 0));
 

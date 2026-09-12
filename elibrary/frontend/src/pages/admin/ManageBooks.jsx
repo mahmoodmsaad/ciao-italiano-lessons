@@ -51,7 +51,7 @@ export default function ManageBooks() {
     setError('');
     try {
       await api.delete(`/books/${deleting._id}`);
-      setMessage(`"${deleting.title}" delete ho gayi.`);
+      setMessage(`"${deleting.title}" was deleted.`);
       setDeleting(null);
       await load();
     } catch (err) {
@@ -67,7 +67,7 @@ export default function ManageBooks() {
       <header className="flex flex-wrap items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-slate-900">Manage Books</h1>
-          <p className="mt-1 text-sm text-slate-600">Books add, edit ya delete karein.</p>
+          <p className="mt-1 text-sm text-slate-600">Add, edit and remove books from the collection.</p>
         </div>
         <button
           type="button"
@@ -77,7 +77,7 @@ export default function ManageBooks() {
             setFormOpen(true);
           }}
         >
-          + Nai book add karein
+          + Add new book
         </button>
       </header>
 
@@ -85,7 +85,7 @@ export default function ManageBooks() {
         className="input max-w-md"
         value={search}
         onChange={(e) => setSearch(e.target.value)}
-        placeholder="Title, author ya ISBN se dhoondein..."
+        placeholder="Search by title, author or ISBN..."
       />
 
       <Alert type="success" onClose={() => setMessage('')}>{message}</Alert>
@@ -94,7 +94,7 @@ export default function ManageBooks() {
       {loading ? (
         <PageLoader />
       ) : books.length === 0 ? (
-        <EmptyState title="Koi book nahi mili" hint="Nai book add karein ya search badlein." />
+        <EmptyState title="No books found" hint="Add a new book or change your search." />
       ) : (
         <>
           <p className="text-sm text-slate-500">{meta.total} books</p>
@@ -166,16 +166,16 @@ export default function ManageBooks() {
         book={editing}
         onClose={() => setFormOpen(false)}
         onSaved={() => {
-          setMessage(editing ? 'Book update ho gayi.' : 'Nai book add ho gayi.');
+          setMessage(editing ? 'Book updated.' : 'New book added.');
           load();
         }}
       />
 
       <ConfirmDialog
         open={Boolean(deleting)}
-        title="Book delete karein?"
-        message={`"${deleting?.title}" hamesha ke liye delete ho jayegi. Ye wapas nahi aa sakti.`}
-        confirmText="Haan, delete karein"
+        title="Delete this book?"
+        message={`"${deleting?.title}" will be permanently deleted. This cannot be undone.`}
+        confirmText="Yes, delete"
         busy={deleteBusy}
         onConfirm={confirmDelete}
         onClose={() => setDeleting(null)}

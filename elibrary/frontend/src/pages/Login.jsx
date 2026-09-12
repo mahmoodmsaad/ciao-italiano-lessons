@@ -35,7 +35,7 @@ export default function Login() {
   };
 
   return (
-    <AuthShell title="Wapas khush aamdeed" subtitle="Apne account se login karein.">
+    <AuthShell title="Welcome back" subtitle="Sign in to your library account.">
       <form onSubmit={submit} className="space-y-4">
         <Alert onClose={() => setError('')}>{error}</Alert>
 
@@ -48,7 +48,7 @@ export default function Login() {
             className="input"
             value={form.email}
             onChange={set('email')}
-            placeholder="aapka@university.edu.pk"
+            placeholder="you@university.edu.pk"
             required
           />
         </div>
@@ -73,9 +73,9 @@ export default function Login() {
       </form>
 
       <p className="mt-6 text-center text-sm text-slate-600">
-        Account nahi hai?{' '}
+        No account yet?{' '}
         <Link to="/register" className="font-medium text-brand-600 hover:underline">
-          Register karein
+          Register
         </Link>
       </p>
 
@@ -88,7 +88,7 @@ export default function Login() {
   );
 }
 
-/** Login aur Register dono ka common layout. */
+/** Shared layout for the login and register pages. */
 export function AuthShell({ title, subtitle, children }) {
   return (
     <div className="flex min-h-screen flex-col bg-gradient-to-br from-brand-50 via-slate-100 to-slate-200">

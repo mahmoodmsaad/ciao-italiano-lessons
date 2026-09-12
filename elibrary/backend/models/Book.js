@@ -18,7 +18,7 @@ const bookSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-// Search ke liye - title, author aur isbn par text index
+// Text index on title, author and isbn to support search
 bookSchema.index({ title: 'text', author: 'text', isbn: 'text' });
 
 bookSchema.virtual('isAvailable').get(function isAvailable() {

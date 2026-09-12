@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { Badge } from './ui.jsx';
 
-/** Catalog grid ka ek card. */
+/** One card in the catalog grid. */
 export default function BookCard({ book }) {
   const available = book.availableCopies > 0;
 

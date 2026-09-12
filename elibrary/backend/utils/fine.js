@@ -2,7 +2,7 @@ import { config } from '../config/env.js';
 
 const MS_PER_DAY = 24 * 60 * 60 * 1000;
 
-/** Din ki ginti (time ignore karke) - due date se aaj tak kitne din late. */
+/** Whole days late, ignoring the time of day. */
 export function daysOverdue(dueDate, asOf = new Date()) {
   const due = new Date(dueDate).setHours(0, 0, 0, 0);
   const now = new Date(asOf).setHours(0, 0, 0, 0);
@@ -10,7 +10,7 @@ export function daysOverdue(dueDate, asOf = new Date()) {
   return diff > 0 ? diff : 0;
 }
 
-/** Fine = late days x FINE_PER_DAY (default Rs 5/day). */
+/** Fine = days late x FINE_PER_DAY (Rs 5/day by default). */
 export function calculateFine(dueDate, asOf = new Date()) {
   return daysOverdue(dueDate, asOf) * config.finePerDay;
 }
@@ -22,8 +22,8 @@ export function addDays(date, days) {
 }
 
 /**
- * Issue record ko live fine + overdue status ke saath plain object banata hai.
- * Return ho chuki books ka fine record se hi liya jata hai.
+ * Returns a plain object with the fine and overdue status recalculated for today.
+ * Books that were already returned keep the fine stored on the record.
  */
 export function withLiveFine(issue) {
   const plain = typeof issue.toObject === 'function' ? issue.toObject() : { ...issue };

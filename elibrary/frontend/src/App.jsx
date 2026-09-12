@@ -31,13 +31,13 @@ export default function App() {
           </ProtectedRoute>
         }
       >
-        {/* Student + admin dono ye pages dekh sakte hain */}
+        {/* Both students and admins can open these */}
         <Route index element={<Catalog />} />
         <Route path="books/:id" element={<BookDetail />} />
         <Route path="my-books" element={<MyBooks />} />
         <Route path="profile" element={<Profile />} />
 
-        {/* Sirf admin */}
+        {/* Admins only */}
         <Route path="admin" element={<AdminOnly><Dashboard /></AdminOnly>} />
         <Route path="admin/books" element={<AdminOnly><ManageBooks /></AdminOnly>} />
         <Route path="admin/issues" element={<AdminOnly><IssueReturn /></AdminOnly>} />
@@ -58,10 +58,10 @@ function NotFound() {
   return (
     <div className="flex min-h-screen flex-col items-center justify-center gap-4 px-4 text-center">
       <span className="text-6xl">🔍</span>
-      <h1 className="text-2xl font-bold text-slate-900">Page nahi mila</h1>
-      <p className="text-slate-600">Jo page aap dhoond rahe hain wo mojood nahi hai.</p>
+      <h1 className="text-2xl font-bold text-slate-900">Page not found</h1>
+      <p className="text-slate-600">The page you are looking for does not exist.</p>
       <Link to={user?.role === 'admin' ? '/admin' : '/'} className="btn-primary">
-        Wapas home par
+        Back to home
       </Link>
     </div>
   );

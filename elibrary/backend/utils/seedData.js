@@ -6,24 +6,24 @@ import { sampleUsers, sampleBooks } from './sampleData.js';
 import { addDays, calculateFine } from './fine.js';
 
 /**
- * Database ko demo data se bhar deta hai.
- * seed script bhi ye chalata hai aur in-memory demo mode bhi.
+ * Fills the database with demo data.
+ * Used by both the seed script and the in-memory demo mode.
  */
 export async function seedDatabase({ log = () => {} } = {}) {
   await Promise.all([Issue.deleteMany({}), Book.deleteMany({}), User.deleteMany({})]);
-  log('Purana data saaf kar diya.');
+  log('Cleared existing data.');
 
-  // create() use kar rahe hain taake pre-save hook password hash kare.
+  // create() is used so the pre-save hook hashes each password.
   const users = await User.create(sampleUsers);
   const books = await Book.create(
     sampleBooks.map((b) => ({ ...b, availableCopies: b.totalCopies }))
   );
-  log(`${users.length} users aur ${books.length} books add ho gayin.`);
+  log(`${users.length} users and ${books.length} books inserted.`);
 
   const admin = users.find((u) => u.role === 'admin');
   const students = users.filter((u) => u.role === 'student');
 
-  // Demo issue records - ek normal, ek overdue, ek returned.
+  // Demo loan records: one on time, one overdue, one returned.
   const plans = [
     { student: students[0], book: books[0], issuedDaysAgo: 3, returned: false },
     { student: students[1], book: books[2], issuedDaysAgo: 25, returned: false }, // overdue
@@ -53,7 +53,7 @@ export async function seedDatabase({ log = () => {} } = {}) {
     }
   }
 
-  log(`${plans.length} demo issue records ban gaye.`);
+  log(`${plans.length} demo issue records created.`);
 
   return {
     users: users.length,
